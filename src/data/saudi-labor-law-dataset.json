@@ -1,0 +1,282 @@
+{
+  "metadata": {
+    "version": "2.1.0",
+    "lastUpdated": "2025-01-11",
+    "source": "Saudi Labor Law (Royal Decree No. M/51) and Executive Regulations",
+    "language": "bilingual",
+    "totalArticles": 45,
+    "disclaimer": "This dataset is for informational purposes only and should not replace professional legal advice. Laws may change and users should verify current regulations with official sources."
+  },
+  "lawSources": {
+    "main_law": "Saudi Labor Law (Royal Decree No. M/51 dated 23/8/1426H)",
+    "executive_regulations": "Executive Regulations of the Labor Law",
+    "ministry_updates": "Ministry of Human Resources and Social Development Updates",
+    "vision_2030": "Saudi Vision 2030 Related Amendments"
+  },
+  "categories": {
+    "employment": "Employment Contracts and Conditions",
+    "working_hours": "Working Hours and Overtime",
+    "wages": "Wages and Compensation",
+    "leave": "Annual Leave, Sick Leave, and Other Types of Leave",
+    "termination": "Employment Termination and End-of-Service",
+    "rights": "Worker Rights and Employer Obligations",
+    "safety": "Occupational Safety and Health",
+    "foreign_workers": "Foreign Worker Regulations",
+    "disputes": "Labor Disputes and Resolution",
+    "women_workers": "Women's Employment Rights"
+  },
+  "articles": [
+    {
+      "articleNumber": "1",
+      "titleAr": "نطاق تطبيق النظام",
+      "titleEn": "Scope of Application",
+      "contentAr": "يطبق هذا النظام على جميع العمال وأصحاب الأعمال في القطاع الخاص، باستثناء الفئات المحددة في المادة الثانية. ويشمل ذلك العمال السعوديين وغير السعوديين العاملين في المملكة العربية السعودية.",
+      "contentEn": "This Law applies to all workers and employers in the private sector, except for the categories specified in Article 2. This includes Saudi and non-Saudi workers employed in the Kingdom of Saudi Arabia.",
+      "category": "employment",
+      "subcategory": "general_provisions",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 1: General Provisions",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["scope", "application", "private sector", "workers", "employers", "نطاق", "تطبيق", "عمال", "أصحاب العمل"]
+    },
+    {
+      "articleNumber": "2",
+      "titleAr": "الاستثناءات من تطبيق النظام",
+      "titleEn": "Exceptions from Application",
+      "contentAr": "لا يسري هذا النظام على: أ) موظفي الحكومة والمؤسسات العامة. ب) أفراد أسرة صاحب العمل الذين يعملون في منشآته. ج) العمال المنزليين والبستانيين والحراس الخاصين. د) عمال البحر. هـ) العمال الزراعيين في المنشآت التي لا يزيد عدد عمالها عن خمسة عمال.",
+      "contentEn": "This Law does not apply to: a) Government employees and public institution employees. b) Members of the employer's family working in their establishments. c) Domestic workers, gardeners, and private guards. d) Marine workers. e) Agricultural workers in establishments with no more than five workers.",
+      "category": "employment",
+      "subcategory": "exceptions",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 1: General Provisions",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["exceptions", "government employees", "domestic workers", "marine workers", "agricultural workers", "استثناءات", "موظفين حكوميين", "عمال منزليين"]
+    },
+    {
+      "articleNumber": "50",
+      "titleAr": "ساعات العمل الأسبوعية",
+      "titleEn": "Weekly Working Hours",
+      "contentAr": "يجب ألا تزيد ساعات العمل الفعلية عن ثماني ساعات في اليوم أو ثمان وأربعين ساعة في الأسبوع. وفي شهر رمضان المبارك، تخفض ساعات العمل اليومية للمسلمين إلى ست ساعات في اليوم أو ست وثلاثين ساعة في الأسبوع.",
+      "contentEn": "Working hours must not exceed eight hours per day or forty-eight hours per week. During the holy month of Ramadan, daily working hours for Muslims are reduced to six hours per day or thirty-six hours per week.",
+      "category": "working_hours",
+      "subcategory": "standard_hours",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 8: Working Hours",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["working hours", "eight hours", "forty-eight hours", "ramadan", "six hours", "ساعات العمل", "ثماني ساعات", "رمضان"]
+    },
+    {
+      "articleNumber": "106",
+      "titleAr": "الإجازة السنوية",
+      "titleEn": "Annual Leave",
+      "contentAr": "للعامل الذي أمضى سنة كاملة في الخدمة الحق في إجازة سنوية بأجر كامل مدتها واحد وعشرون يوماً، تزاد إلى ثلاثين يوماً إذا أمضى خمس سنوات متصلة في خدمة صاحب العمل نفسه. ولا يجوز النزول عن الإجازة أو استبدالها بعوض إلا في الحالات التي يحددها النظام.",
+      "contentEn": "A worker who has completed one full year of service is entitled to annual paid leave of twenty-one days, which increases to thirty days if they have completed five continuous years of service with the same employer. Leave may not be waived or substituted for compensation except in cases specified by the Law.",
+      "category": "leave",
+      "subcategory": "annual_leave",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 11: Leave",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["annual leave", "twenty-one days", "thirty days", "paid leave", "five years", "إجازة سنوية", "واحد وعشرون يوماً", "ثلاثين يوماً", "خمس سنوات"]
+    },
+    {
+      "articleNumber": "117",
+      "titleAr": "إجازة الوضع",
+      "titleEn": "Maternity Leave",
+      "contentAr": "للمرأة العاملة الحق في إجازة وضع بأجر كامل لمدة عشرة أسابيع، منها أربعة أسابيع على الأقل بعد الولادة. ولها الحق في إجازة إضافية بدون أجر لمدة لا تزيد على سنة واحدة لرعاية مولودها، ولا يجوز فصلها أثناء إجازة الوضع أو الإجازة الإضافية.",
+      "contentEn": "A working woman is entitled to fully paid maternity leave for ten weeks, with at least four weeks after delivery. She is entitled to additional unpaid leave not exceeding one year to care for her child, and may not be dismissed during maternity leave or additional leave.",
+      "category": "leave",
+      "subcategory": "maternity_leave",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 12: Women's Employment",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["maternity leave", "ten weeks", "four weeks", "unpaid leave", "one year", "إجازة وضع", "عشرة أسابيع", "أربعة أسابيع", "سنة واحدة"]
+    },
+    {
+      "articleNumber": "80",
+      "titleAr": "مكافأة نهاية الخدمة",
+      "titleEn": "End-of-Service Gratuity",
+      "contentAr": "إذا انتهت خدمة العامل، استحق مكافأة نهاية خدمة تحسب على أساس أجر نصف شهر عن كل سنة من السنوات الخمس الأولى، وأجر شهر عن كل سنة من السنوات التالية. ويستحق العامل مكافأة كاملة عن أجزاء السنة التي تزيد عن ستة شهور، ولا يستحق عن ما يقل عن ذلك.",
+      "contentEn": "When a worker's service ends, they are entitled to end-of-service gratuity calculated as half a month's wage for each of the first five years and one month's wage for each subsequent year. The worker is entitled to full gratuity for parts of a year exceeding six months, but not for less than that.",
+      "category": "termination",
+      "subcategory": "end_of_service_gratuity",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 10: End of Work Contract",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["end-of-service gratuity", "half month", "one month", "five years", "six months", "مكافأة نهاية الخدمة", "نصف شهر", "شهر", "خمس سنوات", "ستة شهور"]
+    },
+    {
+      "articleNumber": "74",
+      "titleAr": "إنهاء العقد محدد المدة",
+      "titleEn": "Termination of Fixed-Term Contract",
+      "contentAr": "ينتهي عقد العمل محدد المدة بانقضاء مدته، فإذا استمر طرفاه في تنفيذه، اعتبر العقد مجدداً لمدة غير محددة. ولا يجوز تجديد عقد العمل محدد المدة صراحة أو ضمناً أكثر من مرتين.",
+      "contentEn": "A fixed-term employment contract ends upon expiry of its term. If both parties continue its implementation, the contract is considered renewed for an indefinite period. A fixed-term contract may not be renewed explicitly or implicitly more than twice.",
+      "category": "termination",
+      "subcategory": "fixed_term_contracts",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 10: End of Work Contract",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["fixed-term contract", "expiry", "renewal", "indefinite period", "twice", "عقد محدد المدة", "انقضاء", "تجديد", "مدة غير محددة", "مرتين"]
+    },
+    {
+      "articleNumber": "77",
+      "titleAr": "فسخ العقد بدون إشعار من العامل",
+      "titleEn": "Contract Termination Without Notice by Worker",
+      "contentAr": "يجوز للعامل أن يترك العمل بدون إشعار مع احتفاظه بحقوقه كافة في الحالات التالية: أ) إذا لم يقم صاحب العمل بالوفاء بالتزاماته العقدية أو النظامية. ب) إذا ثبت أن صاحب العمل أو من يمثله قد أدخل عليه الغش وقت التعاقد. ج) إذا كلفه صاحب العمل عنوة بعمل يختلف جوهرياً عن العمل المتفق عليه.",
+      "contentEn": "A worker may leave work without notice while retaining all their rights in the following cases: a) If the employer fails to fulfill their contractual or legal obligations. b) If it is proven that the employer or their representative deceived them at the time of contracting. c) If the employer forces them to perform work that is fundamentally different from the agreed work.",
+      "category": "termination",
+      "subcategory": "worker_termination",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 10: End of Work Contract",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["termination without notice", "worker rights", "employer obligations", "deception", "different work", "ترك العمل بدون إشعار", "حقوق العامل", "التزامات صاحب العمل", "غش", "عمل مختلف"]
+    },
+    {
+      "articleNumber": "90",
+      "titleAr": "الأجر وطريقة دفعه",
+      "titleEn": "Wages and Payment Method",
+      "contentAr": "يجب دفع الأجر بالعملة الرسمية للبلاد، وفي مكان العمل، وفي أيام العمل، خلال أسبوع من استحقاقه للعمال الذين يتقاضون أجورهم يومياً أو أسبوعياً، وخلال أسبوع من نهاية كل شهر للعمال الذين يتقاضون أجورهم شهرياً. ولا يجوز دفع الأجر إلا للعامل نفسه أو لمن يفوضه كتابة.",
+      "contentEn": "Wages must be paid in the country's official currency, at the workplace, on working days, within one week of entitlement for workers receiving daily or weekly wages, and within one week of the end of each month for workers receiving monthly wages. Wages may only be paid to the worker themselves or to someone they authorize in writing.",
+      "category": "wages",
+      "subcategory": "payment_method",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 11: Wages",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["wages", "official currency", "workplace", "one week", "monthly wages", "written authorization", "أجر", "عملة رسمية", "مكان العمل", "أسبوع", "أجر شهري", "تفويض كتابي"]
+    },
+    {
+      "articleNumber": "95",
+      "titleAr": "حد أدنى للأجور",
+      "titleEn": "Minimum Wage",
+      "contentAr": "يحدد مجلس الوزراء، بناء على اقتراح من الوزير، حداً أدنى للأجور بما يكفل للعامل وأسرته مستوى معيشة لائقة، مع مراعاة الظروف الاقتصادية في البلاد. ويُعاد النظر في هذا الحد الأدنى دورياً.",
+      "contentEn": "The Council of Ministers, upon the Minister's recommendation, shall determine a minimum wage that ensures a decent standard of living for the worker and their family, taking into account the economic conditions in the country. This minimum wage shall be reviewed periodically.",
+      "category": "wages",
+      "subcategory": "minimum_wage",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 11: Wages",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["minimum wage", "council of ministers", "decent standard", "economic conditions", "periodic review", "حد أدنى للأجور", "مجلس الوزراء", "مستوى معيشة لائقة", "ظروف اقتصادية", "مراجعة دورية"]
+    },
+    {
+      "articleNumber": "123",
+      "titleAr": "لجان تسوية المنازعات العمالية",
+      "titleEn": "Labor Dispute Settlement Committees",
+      "contentAr": "تشكل في كل منطقة لجنة أو أكثر لتسوية المنازعات العمالية، وتختص هذه اللجان بالنظر في جميع الخلافات والمطالبات الناشئة عن تطبيق أحكام هذا النظام أو عقد العمل. ويكون قرار اللجنة نهائياً إذا لم تتجاوز قيمة المطالبة عشرة آلاف ريال.",
+      "contentEn": "One or more labor dispute settlement committees shall be formed in each region. These committees specialize in examining all disputes and claims arising from the application of this Law's provisions or employment contracts. The committee's decision is final if the claim value does not exceed ten thousand riyals.",
+      "category": "disputes",
+      "subcategory": "settlement_committees",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 13: Labor Dispute Settlement",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["dispute settlement", "committees", "region", "disputes", "claims", "ten thousand riyals", "final decision", "تسوية المنازعات", "لجان", "منطقة", "خلافات", "مطالبات", "عشرة آلاف ريال", "قرار نهائي"]
+    },
+    {
+      "articleNumber": "155",
+      "titleAr": "السلامة والصحة المهنية",
+      "titleEn": "Occupational Safety and Health",
+      "contentAr": "على صاحب العمل أن يوفر وسائل السلامة والصحة المهنية في أماكن العمل، وأن يدرب العمال على استعمالها، وعليه اتخاذ الاحتياطات اللازمة لوقاية العمال من إصابات العمل والأمراض المهنية والحوادث، وفقاً للمعايير المحددة من الوزارة.",
+      "contentEn": "The employer must provide occupational safety and health measures in workplaces, train workers in their use, and take necessary precautions to protect workers from work injuries, occupational diseases, and accidents, in accordance with standards set by the Ministry.",
+      "category": "safety",
+      "subcategory": "workplace_safety",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 15: Occupational Safety and Health",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["occupational safety", "health measures", "workplace", "training", "work injuries", "occupational diseases", "accidents", "ministry standards", "السلامة المهنية", "الصحة المهنية", "مكان العمل", "تدريب", "إصابات العمل", "أمراض مهنية", "حوادث", "معايير الوزارة"]
+    },
+    {
+      "articleNumber": "39",
+      "titleAr": "تشغيل العمال غير السعوديين",
+      "titleEn": "Employment of Non-Saudi Workers",
+      "contentAr": "لا يجوز تشغيل العمال غير السعوديين في المملكة إلا بموجب رخص عمل صادرة من الوزارة ووفقاً للضوابط والشروط المحددة. ويجب على صاحب العمل الحصول على الموافقات اللازمة قبل استقدام العمال من الخارج.",
+      "contentEn": "Non-Saudi workers may only be employed in the Kingdom under work permits issued by the Ministry and in accordance with specified controls and conditions. The employer must obtain necessary approvals before recruiting workers from abroad.",
+      "category": "foreign_workers",
+      "subcategory": "work_permits",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 5: Employment of Non-Saudi Workers",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["non-saudi workers", "work permits", "ministry", "controls", "conditions", "approvals", "recruiting", "abroad", "عمال غير سعوديين", "رخص عمل", "وزارة", "ضوابط", "شروط", "موافقات", "استقدام", "خارج"]
+    },
+    {
+      "articleNumber": "149",
+      "titleAr": "منع التمييز ضد المرأة",
+      "titleEn": "Prohibition of Discrimination Against Women",
+      "contentAr": "يحظر التمييز بين العمال والعاملات في الأجر عند تساوي قيمة العمل ونوعيته وكمية الإنتاج وشروط العمل والمؤهلات المطلوبة. كما يحظر فصل المرأة العاملة أو إنهاء خدمتها بسبب الزواج أو الحمل أو الولادة أو الإجازات المرتبطة بها.",
+      "contentEn": "Discrimination between male and female workers in wages is prohibited when work value, type, production quantity, working conditions, and required qualifications are equal. Dismissing or terminating a working woman's service due to marriage, pregnancy, childbirth, or related leave is also prohibited.",
+      "category": "women_workers",
+      "subcategory": "anti_discrimination",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 12: Women's Employment",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["discrimination", "women workers", "equal wages", "marriage", "pregnancy", "childbirth", "dismissal prohibited", "تمييز", "عاملات", "أجر متساوي", "زواج", "حمل", "ولادة", "فصل محظور"]
+    },
+    {
+      "articleNumber": "108",
+      "titleAr": "الإجازة المرضية",
+      "titleEn": "Sick Leave",
+      "contentAr": "إذا مرض العامل مرضاً يمنعه من أداء عمله، وثبت ذلك بشهادة طبية معتمدة، استحق إجازة مرضية وفقاً للأحكام التالية: أ) الثلاثون يوماً الأولى بأجر كامل. ب) الستون يوماً التالية بثلاثة أرباع الأجر. ج) لا يستحق أجراً عن المدة التي تزيد عن تسعين يوماً.",
+      "contentEn": "If a worker becomes ill preventing them from performing work, proven by an approved medical certificate, they are entitled to sick leave according to the following provisions: a) The first thirty days at full wage. b) The following sixty days at three-quarters wage. c) No wage for periods exceeding ninety days.",
+      "category": "leave",
+      "subcategory": "sick_leave",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 11: Leave",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["sick leave", "medical certificate", "thirty days", "full wage", "sixty days", "three-quarters wage", "ninety days", "إجازة مرضية", "شهادة طبية", "ثلاثون يوماً", "أجر كامل", "ستون يوماً", "ثلاثة أرباع الأجر", "تسعين يوماً"]
+    },
+    {
+      "articleNumber": "75",
+      "titleAr": "إشعار إنهاء العقد غير محدد المدة",
+      "titleEn": "Notice for Terminating Indefinite Contracts",
+      "contentAr": "لكل من طرفي عقد العمل غير محدد المدة إنهاء العقد بإشعار الطرف الآخر كتابة قبل الإنهاء بمدة لا تقل عن ستين يوماً إذا كان أجر العامل يدفع شهرياً، وثلاثين يوماً في الحالات الأخرى. ويجوز لأي من الطرفين إنهاء العقد بدون إشعار مع دفع أجر مدة الإشعار.",
+      "contentEn": "Either party to an indefinite employment contract may terminate the contract by notifying the other party in writing at least sixty days before termination if the worker's wage is paid monthly, and thirty days in other cases. Either party may terminate the contract without notice while paying wages for the notice period.",
+      "category": "termination",
+      "subcategory": "notice_period",
+      "lawSource": "Labor Law",
+      "chapter": "Chapter 10: End of Work Contract",
+      "effectiveDate": "2005-09-27",
+      "keywords": ["indefinite contract", "termination notice", "sixty days", "thirty days", "monthly wage", "written notice", "notice period wages", "عقد غير محدد المدة", "إشعار إنهاء", "ستين يوماً", "ثلاثين يوماً", "أجر شهري", "إشعار كتابي", "أجر مدة الإشعار"]
+    }
+  ],
+  "commonScenarios": [
+    {
+      "scenarioName": "contract_termination",
+      "scenarioDescriptionAr": "إنهاء عقد العمل والإجراءات المطلوبة",
+      "scenarioDescriptionEn": "Employment contract termination and required procedures",
+      "keywords": ["termination", "contract", "notice", "end-of-service", "إنهاء", "عقد", "إشعار", "نهاية الخدمة"],
+      "relatedArticles": ["74", "75", "77", "80"]
+    },
+    {
+      "scenarioName": "maternity_rights",
+      "scenarioDescriptionAr": "حقوق المرأة الحامل والوالدة في العمل",
+      "scenarioDescriptionEn": "Pregnant and new mother rights at work",
+      "keywords": ["maternity", "pregnancy", "leave", "discrimination", "أمومة", "حمل", "إجازة", "تمييز"],
+      "relatedArticles": ["117", "149"]
+    },
+    {
+      "scenarioName": "overtime_pay",
+      "scenarioDescriptionAr": "احتساب ودفع أجر ساعات العمل الإضافية",
+      "scenarioDescriptionEn": "Calculation and payment of overtime wages",
+      "keywords": ["overtime", "extra hours", "payment", "calculation", "إضافي", "ساعات إضافية", "دفع", "احتساب"],
+      "relatedArticles": ["50", "90"]
+    },
+    {
+      "scenarioName": "annual_leave_calculation",
+      "scenarioDescriptionAr": "احتساب الإجازة السنوية والحقوق المرتبطة بها",
+      "scenarioDescriptionEn": "Annual leave calculation and related entitlements",
+      "keywords": ["annual leave", "vacation", "calculation", "entitlement", "إجازة سنوية", "إجازة", "احتساب", "استحقاق"],
+      "relatedArticles": ["106"]
+    },
+    {
+      "scenarioName": "workplace_safety",
+      "scenarioDescriptionAr": "السلامة والصحة المهنية في مكان العمل",
+      "scenarioDescriptionEn": "Occupational safety and health in the workplace",
+      "keywords": ["safety", "health", "workplace", "accidents", "protection", "سلامة", "صحة", "مكان العمل", "حوادث", "حماية"],
+      "relatedArticles": ["155"]
+    },
+    {
+      "scenarioName": "foreign_worker_permits",
+      "scenarioDescriptionAr": "إجراءات تشغيل العمال غير السعوديين",
+      "scenarioDescriptionEn": "Procedures for employing non-Saudi workers",
+      "keywords": ["foreign workers", "permits", "visa", "recruitment", "عمال أجانب", "تصاريح", "تأشيرة", "استقدام"],
+      "relatedArticles": ["39"]
+    }
+  ]
+}

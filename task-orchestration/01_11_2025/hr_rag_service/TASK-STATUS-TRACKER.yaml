@@ -1,0 +1,103 @@
+project: HR Business Consultant RAG Service
+created: 2025-01-11
+last_updated: 2025-01-11
+total_tasks: 77
+
+phases:
+  frontend:
+    name: "Frontend Development"
+    duration_days: 7
+    agent_lead: "frontend-developer.md"
+    agent_support: "ui-ux-designer.md"
+    tasks: 28
+    status: "pending"
+    
+  backend:
+    name: "Backend Architecture"  
+    duration_days: 7
+    agent_lead: "backend-architect.md"
+    agent_support: "ai-engineer.md"
+    tasks: 25
+    status: "pending"
+    
+  ai_prompt:
+    name: "AI & Prompt Engineering"
+    duration_days: 3
+    agent_lead: "ai-engineer.md"
+    agent_support: "prompt-engineer.md"
+    tasks: 12
+    status: "pending"
+    
+  testing_deploy:
+    name: "Testing & Deployment"
+    duration_days: 3
+    agent_lead: "deployment-engineer.md"
+    agent_support: "debugger.md"
+    tasks: 12
+    status: "pending"
+
+task_status_summary:
+  todos: 77
+  in_progress: 0
+  on_hold: 0
+  qa: 0
+  completed: 0
+
+priority_distribution:
+  p0_critical: 30
+  p1_high: 25
+  p2_medium: 22
+
+agent_workload:
+  frontend-developer: 28
+  backend-architect: 25
+  ai-engineer: 15
+  ui-ux-designer: 7
+  deployment-engineer: 12
+  debugger: 5
+  prompt-engineer: 8
+
+critical_path_tasks:
+  - TASK-001  # Design system foundation
+  - TASK-005  # Auth UI modifications
+  - TASK-009  # Document upload component
+  - TASK-013  # Chat interface
+  - TASK-029  # Multi-tenant DB schema
+  - TASK-037  # Vector database setup
+  - TASK-054  # RAG optimization
+  - TASK-066  # Testing phase
+
+next_actions:
+  - Start with TASK-001: Create design system
+  - Assign ui-ux-designer.md to design foundation
+  - Prepare frontend-developer.md for implementation
+  - Review existing boilerplate structure
+
+blockers: []
+
+milestones:
+  - name: "Frontend MVP Complete"
+    due_day: 7
+    dependencies: ["TASK-001", "TASK-028"]
+    status: "pending"
+    
+  - name: "Backend Core Ready"
+    due_day: 14
+    dependencies: ["TASK-029", "TASK-053"]
+    status: "pending"
+    
+  - name: "RAG System Operational"
+    due_day: 17
+    dependencies: ["TASK-054", "TASK-065"]
+    status: "pending"
+    
+  - name: "MVP Ready for Testing"
+    due_day: 20
+    dependencies: ["TASK-066", "TASK-077"]
+    status: "pending"
+
+notes:
+  - Frontend work starts immediately on existing Next.js boilerplate
+  - Saudi labor law data preparation can run in parallel
+  - Multi-tenant architecture is critical for security
+  - Arabic RTL support requires careful CSS planning

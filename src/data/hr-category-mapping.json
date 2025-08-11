@@ -1,0 +1,305 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-11",
+    "description": "HR scenario to Saudi law article mappings for the RAG system",
+    "totalMappings": 15
+  },
+  "hrCategories": {
+    "employment_contracts": {
+      "nameAr": "عقود العمل",
+      "nameEn": "Employment Contracts",
+      "description": "Contract formation, terms, probation periods, and contract types",
+      "priority": 10,
+      "commonQuestions": [
+        {
+          "questionAr": "ما هي أنواع عقود العمل المسموحة؟",
+          "questionEn": "What types of employment contracts are allowed?",
+          "relevantArticles": ["1", "2", "74"],
+          "searchKeywords": ["contract types", "employment agreement", "أنواع العقود", "اتفاقية العمل"]
+        },
+        {
+          "questionAr": "كم مدة فترة التجربة المسموحة؟",
+          "questionEn": "What is the allowed probation period duration?",
+          "relevantArticles": ["54", "55"],
+          "searchKeywords": ["probation period", "trial period", "فترة التجربة", "فترة الاختبار"]
+        }
+      ]
+    },
+    "working_hours": {
+      "nameAr": "ساعات العمل",
+      "nameEn": "Working Hours",
+      "description": "Daily and weekly working hours, overtime, breaks, and special conditions",
+      "priority": 9,
+      "commonQuestions": [
+        {
+          "questionAr": "كم ساعة العمل المسموحة في اليوم؟",
+          "questionEn": "How many working hours are allowed per day?",
+          "relevantArticles": ["50"],
+          "searchKeywords": ["daily hours", "8 hours", "ساعات يومية", "8 ساعات"]
+        },
+        {
+          "questionAr": "كيف تحسب ساعات العمل الإضافية؟",
+          "questionEn": "How are overtime hours calculated?",
+          "relevantArticles": ["50", "90"],
+          "searchKeywords": ["overtime", "extra hours", "additional pay", "ساعات إضافية", "أجر إضافي"]
+        },
+        {
+          "questionAr": "ما هي ساعات العمل في رمضان؟",
+          "questionEn": "What are working hours during Ramadan?",
+          "relevantArticles": ["50"],
+          "searchKeywords": ["ramadan hours", "6 hours", "reduced hours", "ساعات رمضان", "6 ساعات"]
+        }
+      ]
+    },
+    "wages_compensation": {
+      "nameAr": "الأجور والتعويضات",
+      "nameEn": "Wages and Compensation",
+      "description": "Salary payments, minimum wage, overtime pay, and wage protection",
+      "priority": 10,
+      "commonQuestions": [
+        {
+          "questionAr": "ما هو الحد الأدنى للأجور؟",
+          "questionEn": "What is the minimum wage?",
+          "relevantArticles": ["95"],
+          "searchKeywords": ["minimum wage", "salary floor", "حد أدنى أجور", "أقل راتب"]
+        },
+        {
+          "questionAr": "متى يجب دفع الراتب؟",
+          "questionEn": "When must salary be paid?",
+          "relevantArticles": ["90"],
+          "searchKeywords": ["salary payment", "wage payment", "payment schedule", "دفع الراتب", "جدول الرواتب"]
+        },
+        {
+          "questionAr": "هل يمكن خصم من الراتب؟",
+          "questionEn": "Can deductions be made from salary?",
+          "relevantArticles": ["91", "92"],
+          "searchKeywords": ["salary deductions", "wage cuts", "خصم من الراتب", "تقليل الأجر"]
+        }
+      ]
+    },
+    "annual_leave": {
+      "nameAr": "الإجازة السنوية",
+      "nameEn": "Annual Leave",
+      "description": "Annual vacation entitlements, calculation, and scheduling",
+      "priority": 8,
+      "commonQuestions": [
+        {
+          "questionAr": "كم يوم إجازة سنوية أستحق؟",
+          "questionEn": "How many days of annual leave am I entitled to?",
+          "relevantArticles": ["106"],
+          "searchKeywords": ["annual leave days", "21 days", "30 days", "vacation entitlement", "أيام الإجازة السنوية", "21 يوم", "30 يوم"]
+        },
+        {
+          "questionAr": "متى تزيد الإجازة السنوية من 21 إلى 30 يوم؟",
+          "questionEn": "When does annual leave increase from 21 to 30 days?",
+          "relevantArticles": ["106"],
+          "searchKeywords": ["5 years service", "increased leave", "خمس سنوات خدمة", "زيادة الإجازة"]
+        }
+      ]
+    },
+    "sick_leave": {
+      "nameAr": "الإجازة المرضية",
+      "nameEn": "Sick Leave",
+      "description": "Medical leave, sick pay calculations, and medical certificate requirements",
+      "priority": 7,
+      "commonQuestions": [
+        {
+          "questionAr": "كم مدة الإجازة المرضية بأجر كامل؟",
+          "questionEn": "What is the duration of fully paid sick leave?",
+          "relevantArticles": ["108"],
+          "searchKeywords": ["30 days full pay", "sick leave duration", "30 يوم أجر كامل", "مدة الإجازة المرضية"]
+        },
+        {
+          "questionAr": "ما المطلوب للحصول على إجازة مرضية؟",
+          "questionEn": "What is required to get sick leave?",
+          "relevantArticles": ["108"],
+          "searchKeywords": ["medical certificate", "doctor report", "شهادة طبية", "تقرير طبي"]
+        }
+      ]
+    },
+    "maternity_leave": {
+      "nameAr": "إجازة الوضع",
+      "nameEn": "Maternity Leave",
+      "description": "Maternity leave duration, pay, and additional unpaid leave options",
+      "priority": 8,
+      "commonQuestions": [
+        {
+          "questionAr": "كم مدة إجازة الوضع؟",
+          "questionEn": "What is the duration of maternity leave?",
+          "relevantArticles": ["117"],
+          "searchKeywords": ["10 weeks maternity", "maternity duration", "10 أسابيع وضع", "مدة إجازة الوضع"]
+        },
+        {
+          "questionAr": "هل يمكن أخذ إجازة إضافية بدون أجر لرعاية الطفل؟",
+          "questionEn": "Can I take additional unpaid leave to care for my child?",
+          "relevantArticles": ["117"],
+          "searchKeywords": ["unpaid leave", "child care", "one year", "إجازة بدون أجر", "رعاية طفل", "سنة واحدة"]
+        }
+      ]
+    },
+    "contract_termination": {
+      "nameAr": "إنهاء العقد",
+      "nameEn": "Contract Termination",
+      "description": "Contract termination procedures, notice periods, and termination types",
+      "priority": 10,
+      "commonQuestions": [
+        {
+          "questionAr": "كم مدة الإشعار المطلوبة لإنهاء العقد؟",
+          "questionEn": "What is the required notice period for contract termination?",
+          "relevantArticles": ["75"],
+          "searchKeywords": ["60 days notice", "30 days notice", "termination notice", "إشعار 60 يوم", "إشعار 30 يوم", "إشعار إنهاء"]
+        },
+        {
+          "questionAr": "متى يمكن إنهاء العقد بدون إشعار؟",
+          "questionEn": "When can a contract be terminated without notice?",
+          "relevantArticles": ["77"],
+          "searchKeywords": ["immediate termination", "without notice", "breach of contract", "إنهاء فوري", "بدون إشعار", "مخالفة العقد"]
+        },
+        {
+          "questionAr": "ماذا يحدث للعقد محدد المدة عند انتهائه؟",
+          "questionEn": "What happens to a fixed-term contract when it expires?",
+          "relevantArticles": ["74"],
+          "searchKeywords": ["contract expiry", "renewal", "indefinite contract", "انتهاء العقد", "تجديد", "عقد غير محدد"]
+        }
+      ]
+    },
+    "end_of_service": {
+      "nameAr": "مكافأة نهاية الخدمة",
+      "nameEn": "End-of-Service Gratuity",
+      "description": "End-of-service benefit calculations, eligibility, and payment terms",
+      "priority": 9,
+      "commonQuestions": [
+        {
+          "questionAr": "كيف تحسب مكافأة نهاية الخدمة؟",
+          "questionEn": "How is end-of-service gratuity calculated?",
+          "relevantArticles": ["80"],
+          "searchKeywords": ["gratuity calculation", "half month", "full month", "5 years", "حساب المكافأة", "نصف شهر", "شهر كامل", "5 سنوات"]
+        },
+        {
+          "questionAr": "متى أستحق مكافأة نهاية الخدمة كاملة؟",
+          "questionEn": "When am I entitled to full end-of-service gratuity?",
+          "relevantArticles": ["80"],
+          "searchKeywords": ["full gratuity", "resignation", "termination", "مكافأة كاملة", "استقالة", "إنهاء"]
+        }
+      ]
+    },
+    "women_workers_rights": {
+      "nameAr": "حقوق المرأة العاملة",
+      "nameEn": "Women Workers' Rights",
+      "description": "Anti-discrimination, equal pay, pregnancy protection, and women-specific provisions",
+      "priority": 8,
+      "commonQuestions": [
+        {
+          "questionAr": "هل يحق للمرأة نفس الأجر للعمل المماثل؟",
+          "questionEn": "Is a woman entitled to equal pay for equal work?",
+          "relevantArticles": ["149"],
+          "searchKeywords": ["equal pay", "no discrimination", "same wage", "أجر متساوي", "عدم تمييز", "نفس الراتب"]
+        },
+        {
+          "questionAr": "هل يمكن فصل المرأة بسبب الحمل أو الزواج؟",
+          "questionEn": "Can a woman be dismissed due to pregnancy or marriage?",
+          "relevantArticles": ["149"],
+          "searchKeywords": ["pregnancy discrimination", "marriage discrimination", "dismissal protection", "تمييز حمل", "تمييز زواج", "حماية من الفصل"]
+        }
+      ]
+    },
+    "foreign_workers": {
+      "nameAr": "العمالة غير السعودية",
+      "nameEn": "Foreign Workers",
+      "description": "Work permits, visa requirements, and regulations for non-Saudi employees",
+      "priority": 7,
+      "commonQuestions": [
+        {
+          "questionAr": "ما المطلوب لتوظيف عامل غير سعودي؟",
+          "questionEn": "What is required to employ a non-Saudi worker?",
+          "relevantArticles": ["39"],
+          "searchKeywords": ["work permit", "visa", "ministry approval", "رخصة عمل", "تأشيرة", "موافقة وزارة"]
+        }
+      ]
+    },
+    "workplace_safety": {
+      "nameAr": "السلامة والصحة المهنية",
+      "nameEn": "Occupational Safety and Health",
+      "description": "Workplace safety requirements, employer obligations, and worker protection",
+      "priority": 6,
+      "commonQuestions": [
+        {
+          "questionAr": "ما التزامات صاحب العمل في السلامة المهنية؟",
+          "questionEn": "What are the employer's occupational safety obligations?",
+          "relevantArticles": ["155"],
+          "searchKeywords": ["safety measures", "workplace safety", "training", "protection", "إجراءات السلامة", "سلامة مكان العمل", "تدريب", "حماية"]
+        }
+      ]
+    },
+    "labor_disputes": {
+      "nameAr": "المنازعات العمالية",
+      "nameEn": "Labor Disputes",
+      "description": "Dispute resolution procedures, labor committees, and grievance processes",
+      "priority": 6,
+      "commonQuestions": [
+        {
+          "questionAr": "كيف أرفع شكوى عمالية؟",
+          "questionEn": "How do I file a labor complaint?",
+          "relevantArticles": ["123"],
+          "searchKeywords": ["labor committee", "dispute resolution", "complaint", "لجنة عمالية", "تسوية نزاع", "شكوى"]
+        },
+        {
+          "questionAr": "متى يكون قرار لجنة المنازعات نهائي؟",
+          "questionEn": "When is the dispute committee's decision final?",
+          "relevantArticles": ["123"],
+          "searchKeywords": ["final decision", "10000 riyals", "appeal", "قرار نهائي", "10000 ريال", "استئناف"]
+        }
+      ]
+    }
+  },
+  "searchPatterns": {
+    "calculation_queries": {
+      "keywordsAr": ["احسب", "حساب", "كيف", "مقدار", "كم"],
+      "keywordsEn": ["calculate", "calculation", "how much", "amount", "compute"],
+      "priority": 9,
+      "categories": ["wages_compensation", "end_of_service", "annual_leave", "sick_leave"]
+    },
+    "rights_queries": {
+      "keywordsAr": ["حق", "حقوق", "أستحق", "مستحق", "يحق"],
+      "keywordsEn": ["right", "rights", "entitled", "entitlement", "deserve"],
+      "priority": 8,
+      "categories": ["women_workers_rights", "annual_leave", "sick_leave", "maternity_leave"]
+    },
+    "procedure_queries": {
+      "keywordsAr": ["إجراء", "إجراءات", "كيف", "طريقة", "خطوات"],
+      "keywordsEn": ["procedure", "process", "how to", "steps", "method"],
+      "priority": 7,
+      "categories": ["contract_termination", "labor_disputes", "foreign_workers"]
+    },
+    "time_duration_queries": {
+      "keywordsAr": ["مدة", "فترة", "كم يوم", "كم شهر", "متى"],
+      "keywordsEn": ["duration", "period", "how long", "when", "time"],
+      "priority": 8,
+      "categories": ["annual_leave", "sick_leave", "maternity_leave", "contract_termination"]
+    }
+  },
+  "emergencyScenarios": {
+    "immediate_termination": {
+      "nameAr": "الإنهاء الفوري",
+      "nameEn": "Immediate Termination",
+      "triggerKeywords": ["فوري", "immediate", "طارئ", "emergency", "بدون إشعار", "without notice"],
+      "relevantArticles": ["77"],
+      "priority": 10
+    },
+    "workplace_injury": {
+      "nameAr": "إصابة العمل",
+      "nameEn": "Workplace Injury",
+      "triggerKeywords": ["إصابة", "injury", "حادث", "accident", "أصيب", "injured"],
+      "relevantArticles": ["155"],
+      "priority": 10
+    },
+    "pregnancy_discrimination": {
+      "nameAr": "التمييز ضد الحامل",
+      "nameEn": "Pregnancy Discrimination",
+      "triggerKeywords": ["حامل", "pregnant", "فصل", "dismiss", "تمييز", "discrimination"],
+      "relevantArticles": ["117", "149"],
+      "priority": 9
+    }
+  }
+}
