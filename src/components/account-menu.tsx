@@ -43,6 +43,9 @@ export function AccountMenu({ signOut }: { signOut: () => Promise<ActionResponse
       </DropdownMenuTrigger>
       <DropdownMenuContent className='me-4'>
         <DropdownMenuItem asChild>
+          <Link href='/documents'>Documents</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href='/account'>Account</Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogoutClick}>Log Out</DropdownMenuItem>

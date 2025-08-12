@@ -1,0 +1,225 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 6% 10%;
+    --foreground: 60 0% 90%;
+
+    --muted: 240 6% 10%;
+    --muted-foreground: 240 5% 84%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 215 20.2% 65.1%;
+
+    --radius: 0.5rem;
+
+    /* Saudi Business Color Palette */
+    --saudi-navy-50: 240 100% 97%;
+    --saudi-navy-100: 241 100% 94%;
+    --saudi-navy-200: 241 100% 88%;
+    --saudi-navy-300: 241 100% 80%;
+    --saudi-navy-400: 241 100% 70%;
+    --saudi-navy-500: 241 100% 58%;
+    --saudi-navy-600: 241 84% 48%;
+    --saudi-navy-700: 242 69% 38%;
+    --saudi-navy-800: 242 58% 30%;
+    --saudi-navy-900: 243 46% 25%;
+    --saudi-navy-950: 244 42% 15%;
+
+    --saudi-green-50: 138 76% 97%;
+    --saudi-green-100: 139 69% 93%;
+    --saudi-green-200: 139 69% 86%;
+    --saudi-green-300: 139 68% 75%;
+    --saudi-green-400: 139 69% 61%;
+    --saudi-green-500: 139 69% 48%;
+    --saudi-green-600: 139 69% 39%;
+    --saudi-green-700: 139 68% 32%;
+    --saudi-green-800: 139 65% 27%;
+    --saudi-green-900: 139 61% 23%;
+    --saudi-green-950: 139 70% 12%;
+
+    --saudi-gold-50: 48 100% 97%;
+    --saudi-gold-100: 48 96% 89%;
+    --saudi-gold-200: 48 97% 77%;
+    --saudi-gold-300: 46 97% 65%;
+    --saudi-gold-400: 43 96% 56%;
+    --saudi-gold-500: 38 92% 50%;
+    --saudi-gold-600: 32 95% 44%;
+    --saudi-gold-700: 26 90% 37%;
+    --saudi-gold-800: 23 83% 31%;
+    --saudi-gold-900: 22 78% 26%;
+    --saudi-gold-950: 23 92% 14%;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 216 34% 17%;
+
+    --radius: 0.5rem;
+  }
+  ::selection {
+    @apply text-black;
+    @apply bg-cyan-400;
+  }
+  *:focus-visible {
+    @apply outline;
+    @apply outline-2;
+    @apply outline-offset-2;
+    @apply outline-pink-500;
+  }
+  * {
+    @apply border-border;
+    @apply min-w-0;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+  html {
+    @apply h-full;
+  }
+  body {
+    @apply h-full;
+  }
+  h1 {
+    @apply font-alt;
+    @apply font-bold;
+    @apply text-4xl;
+    @apply text-white;
+    @apply lg:text-6xl;
+    @apply bg-clip-text;
+    @apply drop-shadow-[0_0_15px_rgba(0,0,0,1)];
+    @apply lg:text-transparent;
+    @apply lg:bg-gradient-to-br;
+    @apply from-white;
+    @apply to-neutral-400;
+  }
+}
+
+@layer utilities {
+  /* RTL Support */
+  .rtl-reverse {
+    direction: rtl;
+  }
+  
+  .text-start {
+    text-align: start;
+  }
+  
+  .text-end {
+    text-align: end;
+  }
+  
+  /* Font Families */
+  .font-arabic {
+    font-family: 'Cairo', sans-serif;
+  }
+  
+  .font-english {
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  /* Saudi Business Color Classes */
+  .bg-saudi-navy {
+    background-color: hsl(var(--saudi-navy-700));
+  }
+  
+  .bg-saudi-green {
+    background-color: hsl(var(--saudi-green-600));
+  }
+  
+  .bg-saudi-gold {
+    background-color: hsl(var(--saudi-gold-500));
+  }
+  
+  .text-saudi-navy {
+    color: hsl(var(--saudi-navy-700));
+  }
+  
+  .text-saudi-green {
+    color: hsl(var(--saudi-green-600));
+  }
+  
+  .text-saudi-gold {
+    color: hsl(var(--saudi-gold-500));
+  }
+  
+  .border-saudi-navy {
+    border-color: hsl(var(--saudi-navy-700));
+  }
+  
+  .border-saudi-green {
+    border-color: hsl(var(--saudi-green-600));
+  }
+  
+  .border-saudi-gold {
+    border-color: hsl(var(--saudi-gold-500));
+  }
+  
+  /* Professional HR Styling */
+  .hr-card {
+    @apply bg-white rounded-lg shadow-lg border border-gray-200 p-6;
+  }
+  
+  .hr-button-primary {
+    @apply bg-saudi-navy text-white hover:bg-opacity-90 transition-all duration-200 font-medium px-6 py-3 rounded-md;
+  }
+  
+  .hr-button-secondary {
+    @apply bg-saudi-green text-white hover:bg-opacity-90 transition-all duration-200 font-medium px-6 py-3 rounded-md;
+  }
+  
+  .hr-input {
+    @apply border-gray-300 focus:border-saudi-navy focus:ring-saudi-navy/20 rounded-md px-4 py-3 w-full;
+  }
+}

@@ -1,204 +1,388 @@
-<p align="center">
-  <h1 align="center">next-supabase-stripe-starter</h1>
-  <p align="center">
-    <a href="https://twitter.com/KolbySisk"><img src="/delete-me/github-banner.png" /></a>
-  </p>
-</p>
+# 🇸🇦 HR Intelligence Platform - منصة الاستشارات الذكية للموارد البشرية
 
 <p align="center">
-  <a href="https://twitter.com/kolbysisk" rel="nofollow"><img src="https://img.shields.io/badge/created%20by-@kolbysisk-e57060.svg" alt="Created by Kolby Sisk"></a>
-  <a href="https://opensource.org/licenses/MIT" rel="nofollow"><img src="https://img.shields.io/github/license/kolbysisk/next-supabase-stripe-starter" alt="License"></a>
+  <img src="https://img.shields.io/badge/Arabic%20First-✓-green" />
+  <img src="https://img.shields.io/badge/Multi--tenant%20SaaS-✓-blue" />
+  <img src="https://img.shields.io/badge/AI%20Powered-✓-purple" />
+  <img src="https://img.shields.io/badge/Saudi%20Law%20Ready-✓-red" />
 </p>
 
-<p align="center">
-  <a href="https://next-supabase-stripe-starter-demo-mnqz.vercel.app" style="font-weight: bold; font-size: 20px; text-decoration: underline;">See the demo</a>
-</p>
+## 📖 **Project Overview**
 
-## Introduction
+**HR Intelligence Platform** is a comprehensive, AI-powered HR consultation SaaS platform designed specifically for Saudi Arabian companies. It provides intelligent HR guidance based on Saudi Labor Law, company policies, and best practices through an advanced RAG (Retrieval-Augmented Generation) system.
 
-Bootstrap your SaaS with a modern tech stack built to move quick. Follow the guide to get started.
-
-### What's included
-
-- Next.js 15
-- [Supabase](https://supabase.com) - Postgres database & user authentication
-- [Stripe](https://stripe.com) - [Checkout](https://stripe.com/docs/payments/checkout), [subscriptions](https://stripe.com/docs/billing/subscriptions/overview), and [customer portal](https://stripe.com/docs/customer-management)
-- [React Email](https://react.email/) - Easily build emails and send them with [Resend](https://resend.com)
-- [Tailwindcss](https://tailwindcss.com/) - CSS framework
-- [shadcn/ui](https://ui.shadcn.com) - Prebuilt accessible components
-- Webhooks to automatically synchronize Stripe with Supabase
-- Stripe fixture to bootstrap product data
-- Supabase migrations to bootstrap and manage your db schema
-- Responsive, performant, and accessible prebuilt pages
-- Animated button borders! Now you can look cool without nerds saying you shipped too late
-
-## Getting started
-
-### 1. Setup Supabase
-
-1. Go to [supabase.com](https://supabase.com) and create a project
-1. Go to Project Settings → Database → Database password and click reset database password then click generate a new password. (I know you already made one, but this fixes a [bug with their CLI where it doesn't like special characters in the password](https://github.com/supabase/supabase/issues/15184))
-1. Save this password somewhere, you can't see it after closing the box
-
-### 2. Setup Stripe
-
-1. Go to [stripe.com](https://stripe.com) and create a project
-1. Go to [Customer Portal Settings](https://dashboard.stripe.com/test/settings/billing/portal) and click the `Active test link` button
-
-### 3. Setup Resend
-
-1. Go to [resend.com](https://resend.com) and create an account
-1. Go to the [API Keys page](https://resend.com/api-keys) and create an API Key
-1. Add the [Supabase Resend integration](https://supabase.com/partners/integrations/resend)
-
-### 4. Deploy
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FKolbySisk%2Fnext-supabase-stripe-starter&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,SUPABASE_DB_PASSWORD,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY,STRIPE_WEBHOOK_SECRET,RESEND_API_KEY&demo-title=AI%20Twitter%20Banner%20Demo&demo-url=https%3A%2F%2Fai-twitter-banner.vercel.app&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6)
-
-1. Next click the deploy button ⬆️
-1. On the form create a new repo and add the Supabase integration
-1. Add the environment variables that you have available. For the stripe webhook secret just put any value - we will come back to update this after configuring the webhook
-1. Click Deploy
-1. While you wait, clone your new repo and open it in your code editor. Then create a file named `.env.local`. Copy and pase the contents of `.env.local.example` into this file and add the correct values. They should be the same values you added in above.
-
-![Vercel env config](/delete-me/deplyoment-env.png)
-
-### 5. Stripe Webhook
-
-1. After deploying go to your Vercel dashboard and find your Vercel URL
-1. Next go to your Stripe dashboard, click `Developers` in the top nav, and then the `Webhooks` tab
-1. Add an endpoint. Enter your Vercel URL followed by `/api/webhooks`
-1. Click `Select events`
-1. Check `Select all events`
-1. Scroll to the bottom of the page and click `Add endpoint`
-1. Click to `Reveal` signing secret and copy it
-1. Go to your `Vercel project settings` → `Environment Variables`
-1. Update the value of the `STRIPE_WEBHOOK_SECRET` env with your newly acquired webhook secret. Press `Save`
-
-### 6. Run Supabase Migration
-
-Now we're going to run the initial [Supabase Migration](https://supabase.com/docs/reference/cli/supabase-migration-new) to create your database tables.
-
-1. Run `bunx supabase login`
-1. Run `bunx supabase init`
-1. Open your `package.json` and update both `UPDATE_THIS_WITH_YOUR_SUPABASE_PROJECT_ID` strings with your supabase project id
-1. Run `bun run supabase:link`
-1. Run `bun run migration:up`
-
-### 7. Run Stripe Fixture
-
-[Stripe fixtures](https://stripe.com/docs/cli/fixtures) are an easy way to configure your product offering without messing around in the Stripe UI.
-
-1. Install the [Stripe CLI](https://stripe.com/docs/stripe-cli#install). For Macs run: `brew install stripe/stripe-cli/stripe`
-1. Run (make sure to update the command with your Stripe sk) `stripe fixtures ./stripe-fixtures.json --api-key UPDATE_THIS_WITH_YOUR_STRIPE_SK`
-
-### 8. Last steps
-
-1. Do a `Search All` in your code editor for `UPDATE_THIS` and update all instances with the relevant value (**except for .env.local.example!**)
-1. Delete the `delete-me` dir
-
-### 9. Check it out!
-
-You did it! You should be able to look in your Stripe dashboard and see your products, and you should also see the same data has been populated in your Supabase database. Now let's test everything.
-
-1. Run `bun i`
-1. Run `bun run dev`.
-1. Go to the app and click `Get started for free` - this will take you to the login page
-1. We haven't configured auth providers, so for now click `Continue with Email` and submit your email address
-1. Click the link sent to your email and you should be redirected back to your app - authenticated
-1. Click `Get Started` on one of the plans. This will take you to a Stripe checkout page (In test mode)
-1. Enter `4242424242424242` as your credit card number. Fill out the rest of the form with any valid data and click Subscribe
-1. You should be redirect to the Account page where you can see your active subscription
-1. Click the `Manage your subscription` button
-
-**That's the end of the setup. The following are guides to help you code in your new codebase.**
+### **🎯 Target Market**
+- Saudi Arabian HR departments and consultants
+- Small to enterprise-scale organizations
+- HR professionals seeking Labor Law compliance
+- Companies requiring multilingual (Arabic/English) HR support
 
 ---
 
-## Guides
+## ✨ **Key Features**
 
-### Managing products
+### **🤖 AI-Powered HR Consultation**
+- **Arabic-first chat interface** with RTL support
+- Real-time streaming responses using OpenRouter API
+- Saudi Labor Law integration and expertise
+- Document-based Q&A with source attribution
+- Multi-tenant data isolation for organizations
 
-Your products and prices are managed via the `stripe-fixtures.json` file. You can delete your test data in Stripe on the [Developers page](https://dashboard.stripe.com/test/developers), make the changes you'd like, and then run the fixture command from above. When changes are made in Stripe the webhook hits the api route at `src/app/api/webhooks`. The handler will synchronize the data sent from Stripe to your Supabase database.
+### **📁 Document Management System**
+- Upload and process HR documents (contracts, policies, procedures)
+- Automatic text extraction and Arabic OCR support
+- Document chunking and vector embedding generation
+- Secure, organization-scoped document storage
 
-The `metadata` field in your fixture is where we can store info about the product that can be used in your app. For example, say you have a basic product, and one of the features of the product includes a max number of team invites. You can add a field to the metadata like `team_invites`. Then update the Zod schema in `src/features/pricing/models/product-metadata.ts`
+### **🏢 Multi-tenant Architecture**
+- Organization-level data isolation with Row Level Security (RLS)
+- Role-based access control (Admin, HR Manager, Employee)
+- Scalable SaaS model supporting unlimited organizations
+- Comprehensive audit trails and usage analytics
 
-Then you can make use of it like this:
+### **🌐 Bilingual Support**
+- Native Arabic (العربية) and English interfaces
+- Automatic language detection and switching
+- RTL layout optimization for Arabic content
+- Cultural sensitivity in Saudi business context
 
-```ts
-const products = await getProducts();
-const productMetadata = productMetadataSchema.parse(products[0].metadata); // Now it's typesafe 🙌!
-productMetadata.teamInvites; // The value you set in the fixture
-```
-
-### Managing your database schema
-
-[Migrations](https://supabase.com/docs/reference/cli/supabase-migration-new) are a powerful concept for managing your database schema. Any changes you make to your database schema should be done through migrations.
-
-Say you want to add a table named `invites`.
-
-First run `npm run migration:new add-invites-table`
-Then edit your file to include:
-
-```sql
-create table invites (
-  id uuid not null primary key default gen_random_uuid(),
-  email text not null,
-);
-alter table invites enable row level security;
-```
-
-Then run `npm run migration:up` and your table will be added.
-
-### Configuring auth providers
-
-There are many auth providers you can choose from. [See the Supabase docs](https://supabase.com/docs/guides/auth#providers) for the full the list and their respective guides to configure them.
-
-### Styling
-
-- [Learn more about shadcn/ui components](https://ui.shadcn.com/docs)
-- [Learn more about theming with shadcn/ui](https://ui.shadcn.com/docs/theming)
-- [Learn more about the Tailwindcss theme config](https://tailwindcss.com/docs/theme)
-
-### Emails
-
-Your emails live in the `src/features/emails` dir. Emails are finicky and difficult to style correctly, so make sure to reference the [React Email docs](https://react.email/docs/introduction). After creating your email component, sending an email is as simple as:
-
-```ts
-import WelcomeEmail from '@/features/emails/welcome';
-import { resendClient } from '@/libs/resend/resend-client';
-
-resendClient.emails.send({
-  from: 'no-reply@your-domain.com',
-  to: userEmail,
-  subject: 'Welcome!',
-  react: <WelcomeEmail />,
-});
-```
-
-### File structure
-
-The file structure uses the group by `feature` concept. This is where you will colocate code related to a specific feature, with the exception of UI code. Typically you want to keep your UI code in the `app` dir, with the exception of reusable components. Most of the time reusable components will be agnostic to a feature and should live in the `components` dir. The `components/ui` dir is where `shadcn/ui` components are generated to.
-
-### Going live
-
-Follow these steps when you're ready to go live:
-
-1. Activate your Stripe account and set the dashboard to live mode
-1. Repeat the steps above to create a Stripe webhook in live mode, this time using your live url
-1. Update Vercel env variables with your live Stripe pk, sk, and whsec
-1. After Vercel has redeployed with your new env variables, run the fixture command using your Stripe sk
+### **💰 Cost-Optimized AI Integration**
+- **FREE AI models** prioritized (Google Gemini 2.0 Flash, DeepSeek)
+- Smart fallback system for high availability
+- 95%+ cost savings vs direct OpenAI usage
+- Transparent usage tracking and cost monitoring
 
 ---
 
-## Support
+## 🛠️ **Technology Stack**
 
-If you need help with the setup, or developing in the codebase, feel free to reach out to me on Twitter [@kolbysisk](https://twitter.com/KolbySisk) - I'm always happy to help.
+### **Frontend**
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling with Arabic fonts
+- **Shadcn/ui** - Accessible UI components
+- **RTL Support** - Native Arabic text direction
 
-## Contribute
+### **Backend & Database**
+- **Supabase** - PostgreSQL database with real-time features
+- **Row Level Security** - Multi-tenant data isolation
+- **pgvector** - Vector similarity search for embeddings
+- **Real-time subscriptions** - Live chat updates
 
-PRs are always welcome.
+### **AI & ML Services**
+- **OpenRouter API** - Access to 315+ AI models
+- **Google Gemini 2.0 Flash** - Primary free chat model
+- **DeepSeek V3** - Alternative free reasoning model
+- **text-embedding-3-small** - Cost-effective embeddings
+
+### **Authentication & Payments**
+- **Supabase Auth** - User authentication system
+- **Stripe** - Subscription management and billing
+- **Multi-provider OAuth** - Google, GitHub, email login
 
 ---
 
-This project was inspired by Vercel's [nextjs-subscription-payments](https://github.com/vercel/nextjs-subscription-payments).
+## 🚀 **Quick Start**
+
+### **Prerequisites**
+- Node.js 18+ and npm/bun
+- Supabase account and project
+- OpenRouter API account
+- Stripe account (optional for billing)
+
+### **1. Clone and Install**
+```bash
+git clone https://github.com/Talalkassab/speak.git
+cd speak
+npm install
+```
+
+### **2. Environment Setup**
+```bash
+cp .env.local.example .env.local
+```
+
+**Required Environment Variables:**
+```env
+# Supabase Configuration (✅ Pre-configured)
+NEXT_PUBLIC_SUPABASE_URL=https://mpgzgrteyoyspwwsezdi.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# OpenRouter API (⚠️ Add your key)
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+
+# AI Models (✅ Pre-configured for FREE usage)
+OPENROUTER_MODEL_CHAT=google/gemini-2.0-flash-exp:free
+OPENROUTER_MODEL_DOCUMENT_PROCESSING=google/gemini-2.0-flash-exp:free
+OPENROUTER_MODEL_EMBEDDING=text-embedding-3-small
+```
+
+### **3. Database Setup**
+```bash
+# Database migrations are already applied
+# Saudi Labor Law schema is pre-configured
+npm run dev
+```
+
+### **4. Get OpenRouter API Key**
+1. Visit [OpenRouter.ai](https://openrouter.ai)
+2. Create account and generate API key
+3. Add minimum $10 credits (optional - free models available)
+4. Update `OPENROUTER_API_KEY` in `.env.local`
+
+### **5. Test the Platform**
+```bash
+# Run the application
+npm run dev
+
+# Test OpenRouter integration
+OPENROUTER_API_KEY=your_key npx tsx src/scripts/test-openrouter.ts
+```
+
+---
+
+## 🏗️ **Architecture Overview**
+
+### **Multi-tenant Data Model**
+```
+Organizations
+├── Users (HR Managers, Employees)
+├── Documents (Contracts, Policies, Procedures)
+├── Conversations (Chat History)
+├── Document Chunks (Vector Embeddings)
+└── Usage Analytics
+```
+
+### **RAG System Flow**
+1. **Query Processing** - Arabic/English language detection
+2. **Vector Search** - Find relevant document chunks
+3. **Context Assembly** - Combine documents + Saudi Labor Law
+4. **AI Generation** - Generate contextual response
+5. **Source Attribution** - Provide document references
+6. **Streaming Response** - Real-time chat interface
+
+### **AI Model Hierarchy**
+```
+Primary: Google Gemini 2.0 Flash (FREE)
+├── Fallback 1: DeepSeek V3 (FREE)
+├── Fallback 2: GPT-4o-mini (Low Cost)
+└── Premium: GPT-4o (Complex Legal Analysis)
+```
+
+---
+
+## 📊 **Features Deep Dive**
+
+### **🤖 AI Chat Interface**
+- **Arabic RTL Layout** - Native right-to-left text rendering
+- **Streaming Responses** - Real-time message generation
+- **Source Attribution** - Document reference links
+- **Context Awareness** - Conversation history integration
+- **Mobile Responsive** - Touch-optimized interface
+
+### **📄 Document Management**
+- **File Upload** - PDF, Word, Text document support
+- **OCR Processing** - Arabic text extraction with Tesseract.js
+- **Smart Chunking** - Semantic document segmentation
+- **Vector Embeddings** - Searchable document representations
+- **Access Control** - Organization-scoped permissions
+
+### **⚖️ Saudi Labor Law Integration**
+- **Complete Law Database** - All articles and regulations
+- **Arabic Legal Text** - Native Arabic legal terminology
+- **Contextual Citations** - Automatic law reference linking
+- **Compliance Guidance** - Best practice recommendations
+- **Regular Updates** - Law change notifications
+
+### **🏢 Organization Management**
+- **Multi-tenant Isolation** - Secure data separation
+- **Role-based Access** - Admin, Manager, Employee roles
+- **Usage Analytics** - Chat, document, cost tracking
+- **Team Collaboration** - Shared knowledge base
+- **Custom Branding** - Organization-specific styling
+
+---
+
+## 💰 **Cost Optimization**
+
+### **FREE Usage Tier**
+- **Google Gemini 2.0 Flash** - 100% FREE for chat & documents
+- **Rate Limits** - 30 req/min, 1M tokens/day
+- **Perfect for** - Small to medium organizations
+
+### **Estimated Monthly Costs**
+```
+1000 employees using the platform:
+├── Chat Queries: 10,000 × $0.012 = $120
+├── Document Processing: 1,000 × $0.001 = $1
+├── Embeddings: 50,000 × $0.000021 = $1
+└── Total: ~$122/month (95% savings vs direct OpenAI)
+```
+
+### **Smart Fallback System**
+- Automatic model switching on rate limits
+- Cost escalation only when necessary
+- Usage monitoring and alerts
+- Budget controls per organization
+
+---
+
+## 🚀 **Deployment Guide**
+
+### **Production Checklist**
+- [ ] OpenRouter API key configured
+- [ ] Supabase production database
+- [ ] Environment variables secured
+- [ ] SSL certificates configured
+- [ ] Stripe webhooks (if using billing)
+- [ ] Saudi Labor Law database populated
+- [ ] Multi-language content verified
+
+### **Environment-specific Configuration**
+```bash
+# Development
+npm run dev
+
+# Staging
+npm run build && npm run start
+
+# Production
+npm run build
+# Deploy to Vercel, Netlify, or your preferred platform
+```
+
+---
+
+## 📖 **API Documentation**
+
+### **Chat API**
+```typescript
+POST /api/v1/chat/stream
+{
+  "conversationId": "uuid",
+  "content": "ما هي حقوق الموظف؟",
+  "language": "ar",
+  "includeCompanyDocs": true,
+  "includeLaborLaw": true
+}
+```
+
+### **Document API**
+```typescript
+POST /api/v1/documents/upload
+Content-Type: multipart/form-data
+{
+  "file": File,
+  "organizationId": "uuid",
+  "category": "policy"
+}
+```
+
+### **Analytics API**
+```typescript
+GET /api/v1/analytics/usage
+{
+  "organizationId": "uuid",
+  "dateRange": { "start": "2024-01-01", "end": "2024-01-31" },
+  "metrics": ["chats", "documents", "costs"]
+}
+```
+
+---
+
+## 🔐 **Security & Compliance**
+
+### **Data Protection**
+- **Row Level Security** - Database-level access control
+- **Data Encryption** - At rest and in transit
+- **GDPR Compliance** - User data rights and deletion
+- **Audit Logging** - Complete activity tracking
+- **Saudi Data Laws** - Local compliance requirements
+
+### **Access Control**
+- **Organization Isolation** - Zero data leakage between tenants
+- **Role-based Permissions** - Granular access control
+- **Session Management** - Secure authentication flows
+- **API Rate Limiting** - DDoS and abuse protection
+
+---
+
+## 🎯 **Roadmap & Next Steps**
+
+### **Phase 1: MVP Complete** ✅
+- [x] Multi-tenant architecture
+- [x] Arabic chat interface
+- [x] Document management
+- [x] OpenRouter integration
+- [x] Saudi Labor Law database
+- [x] Cost optimization
+
+### **Phase 2: Enhanced Features** 🚧
+- [ ] Advanced analytics dashboard
+- [ ] Mobile application (React Native)
+- [ ] Voice input/output support
+- [ ] Advanced document templates
+- [ ] Integration APIs (HRIS systems)
+- [ ] White-label customization
+
+### **Phase 3: Enterprise Features** 📋
+- [ ] Advanced compliance monitoring
+- [ ] Custom AI model training
+- [ ] Enterprise SSO integration
+- [ ] Advanced workflow automation
+- [ ] Multi-language expansion
+- [ ] API marketplace integrations
+
+---
+
+## 🤝 **Contributing**
+
+We welcome contributions! Please read our contributing guidelines:
+
+1. **Fork the repository**
+2. **Create feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Commit changes** (`git commit -m 'Add amazing feature'`)
+4. **Push to branch** (`git push origin feature/amazing-feature`)
+5. **Open Pull Request**
+
+### **Development Guidelines**
+- Follow TypeScript best practices
+- Maintain Arabic RTL compatibility
+- Test multi-tenant isolation
+- Document API changes
+- Consider Saudi cultural context
+
+---
+
+## 📞 **Support & Contact**
+
+- **Technical Support** - Create GitHub Issues
+- **Business Inquiries** - Contact via project repository
+- **Documentation** - See `/docs` folder for detailed guides
+- **Community** - Join our discussions in GitHub
+
+---
+
+## 📄 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🏆 **Acknowledgments**
+
+- **Supabase** - For excellent BaaS platform
+- **OpenRouter** - For cost-effective AI model access
+- **Saudi Ministry of Labor** - For Labor Law documentation
+- **Next.js Team** - For outstanding React framework
+- **Arabic Language Community** - For RTL support and feedback
+
+---
+
+<p align="center">
+  <strong>🇸🇦 Built with ❤️ for the Saudi Arabian business community</strong>
+  <br />
+  <em>منصة ذكية للموارد البشرية - صنعت بحب للمجتمع التجاري السعودي</em>
+</p>

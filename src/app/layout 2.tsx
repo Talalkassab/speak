@@ -8,7 +8,6 @@ import { Logo } from '@/components/logo';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/utils/cn';
 import { Analytics } from '@vercel/analytics/react';
-import { OrganizationProvider } from '@/contexts/organization-context';
 
 import { Navigation } from './navigation';
 
@@ -28,25 +27,23 @@ const montserratAlternates = Montserrat_Alternates({
 });
 
 export const metadata: Metadata = {
-  title: 'HR Intelligence Platform - منصة الاستشارات الذكية للموارد البشرية',
-  description: 'AI-powered HR consultation platform for Saudi companies - منصة ذكية للاستشارات في الموارد البشرية للشركات السعودية',
+  title: 'My SaaS App',
+  description: 'Build your business with our powerful SaaS platform',
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
-    <html lang='ar' dir='rtl'>
-      <body className={cn('font-arabic antialiased', montserrat.variable, montserratAlternates.variable)}>
-        <OrganizationProvider>
-          <div className='m-auto flex h-full max-w-[1440px] flex-col px-4'>
-            <AppBar />
-            <main className='relative flex-1'>
-              <div className='relative h-full'>{children}</div>
-            </main>
-            <Footer />
-          </div>
-          <Toaster />
-          <Analytics />
-        </OrganizationProvider>
+    <html lang='en'>
+      <body className={cn('font-sans antialiased', montserrat.variable, montserratAlternates.variable)}>
+        <div className='m-auto flex h-full max-w-[1440px] flex-col px-4'>
+          <AppBar />
+          <main className='relative flex-1'>
+            <div className='relative h-full'>{children}</div>
+          </main>
+          <Footer />
+        </div>
+        <Toaster />
+        <Analytics />
       </body>
     </html>
   );

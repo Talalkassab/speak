@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun install:*)",
+      "Bash(npm install)",
+      "Bash(npx supabase:*)",
+      "Bash(npm run dev:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm install:*)",
+      "Bash(npm run migration:up:*)",
+      "Bash(npm run supabase:link:*)",
+      "Bash(supabase db:*)",
+      "Bash(mv:*)",
+      "Bash(supabase migration repair:*)",
+      "Bash(npx tsx:*)",
+      "Bash(env-cmd:*)",
+      "Bash(NEXT_PUBLIC_SUPABASE_URL=https://mpgzgrteyoyspwwsezdi.supabase.co SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1wZ3pncnRleW95c3B3d3NlemRpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzUyMTA1MywiZXhwIjoyMDY5MDk3MDUzfQ.oROjlmov1mZ-qkb_HuA6sexs-Hg19i-JaMwcc8Undu0 npx tsx src/libs/supabase/apply-rag-schema.ts)",
+      "mcp__supabase__list_migrations",
+      "mcp__supabase__apply_migration"
+    ],
+    "deny": []
+  }
+}
