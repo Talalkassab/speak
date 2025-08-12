@@ -1,0 +1,416 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    # Warm-up phase
+    - duration: 30
+      arrivalRate: 2
+      name: "Warm-up"
+    
+    # Gradual load increase
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 15
+      name: "Ramp up"
+    
+    # Sustained load
+    - duration: 120
+      arrivalRate: 15
+      name: "Sustained load"
+    
+    # Peak load test
+    - duration: 60
+      arrivalRate: 15
+      rampTo: 30
+      name: "Peak load"
+    
+    # Cool down
+    - duration: 30
+      arrivalRate: 30
+      rampTo: 5
+      name: "Cool down"
+
+  engines:
+    http:
+      timeout: 30
+      pool: 10
+      maxSockets: 50
+
+  variables:
+    # Arabic test queries
+    arabicQueries:
+      - "ما هي أحكام الإجازة السنوية؟"
+      - "كيف يتم حساب مكافأة نهاية الخدمة؟"
+      - "ما هي حقوق العامل عند إنهاء الخدمة؟"
+      - "أحكام العمل الإضافي في قانون العمل"
+      - "شروط الحصول على إجازة مرضية"
+    
+    # User types for testing
+    userTypes:
+      - "hr_specialist"
+      - "legal_advisor"
+      - "manager"
+      - "employee"
+    
+    # Document types for upload testing
+    documentTypes:
+      - "employment_contract"
+      - "payroll_slip"
+      - "leave_request"
+      - "performance_review"
+
+  # Custom metrics for Arabic content performance
+  metrics:
+    - name: "arabic_query_response_time"
+      description: "Response time for Arabic queries"
+    - name: "rtl_rendering_time"
+      description: "RTL content rendering time"
+    - name: "ocr_processing_time"
+      description: "OCR processing time for Arabic documents"
+
+scenarios:
+  # Scenario 1: Basic application health check
+  - name: "Health Check"
+    weight: 5
+    flow:
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+      - think: 1
+
+  # Scenario 2: User authentication flow
+  - name: "Authentication Flow"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "test-{{ $randomInt(1, 1000) }}@example.com"
+            password: "testPassword123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - think: 2
+      - get:
+          url: "/dashboard"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+  # Scenario 3: Arabic chat/query performance
+  - name: "Arabic Query Performance"
+    weight: 40
+    flow:
+      # Login first
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "test-user@example.com"
+            password: "testPassword123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      # Submit Arabic query
+      - post:
+          url: "/api/v1/rag/query"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+            Content-Type: "application/json"
+          json:
+            query: "{{ $randomString(arabicQueries) }}"
+            language: "ar"
+            context:
+              organizationId: "org-123"
+              userId: "user-123"
+          expect:
+            - statusCode: 200
+            - hasProperty: "response"
+          capture:
+            - json: "$.conversationId"
+              as: "conversationId"
+      
+      # Check response quality
+      - get:
+          url: "/api/v1/conversations/{{ conversationId }}"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+      
+      - think: 3
+
+  # Scenario 4: Document processing workflow
+  - name: "Document Processing"
+    weight: 20
+    flow:
+      # Authenticate
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "test-user@example.com"
+            password: "testPassword123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      # Upload Arabic document
+      - post:
+          url: "/api/v1/documents/upload"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          formData:
+            file: "@./test-data/arabic-document.pdf"
+            type: "{{ $randomString(documentTypes) }}"
+            language: "ar"
+          expect:
+            - statusCode: 201
+          capture:
+            - json: "$.documentId"
+              as: "documentId"
+      
+      # Check processing status
+      - get:
+          url: "/api/v1/documents/{{ documentId }}/status"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+      
+      # OCR processing
+      - post:
+          url: "/api/v1/ocr/process"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            documentId: "{{ documentId }}"
+            language: "ar"
+            enhanceQuality: true
+          expect:
+            - statusCode: 200
+      
+      - think: 5
+
+  # Scenario 5: Analytics dashboard load
+  - name: "Analytics Dashboard"
+    weight: 15
+    flow:
+      # Authenticate
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "test-user@example.com"
+            password: "testPassword123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      # Load overview metrics
+      - post:
+          url: "/api/v1/analytics/metrics"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            dateRange: "last30days"
+            organizationId: "org-123"
+          expect:
+            - statusCode: 200
+      
+      # Load usage data
+      - get:
+          url: "/api/v1/analytics/usage?period=daily&organizationId=org-123"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+      
+      # Load cost breakdown
+      - get:
+          url: "/api/v1/analytics/costs?organizationId=org-123"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+      
+      - think: 2
+
+  # Scenario 6: Export system stress test
+  - name: "Export Performance"
+    weight: 10
+    flow:
+      # Authenticate
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "test-user@example.com"
+            password: "testPassword123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      # Export conversation to PDF
+      - post:
+          url: "/api/v1/export/conversations/conv-123"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            format: "pdf"
+            options:
+              includeMetadata: true
+              arabicFont: "NotoSansArabic-Regular"
+          expect:
+            - statusCode: 200
+            - contentType: "application/pdf"
+      
+      # Export analytics report
+      - post:
+          url: "/api/v1/export/analytics/report"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            reportId: "report-123"
+            format: "html"
+            options:
+              interactive: true
+              arabicLabels: true
+          expect:
+            - statusCode: 200
+      
+      - think: 4
+
+  # Scenario 7: Voice features performance
+  - name: "Voice Features"
+    weight: 5
+    flow:
+      # Authenticate
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "test-user@example.com"
+            password: "testPassword123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      # Voice transcription
+      - post:
+          url: "/api/v1/voice/transcribe"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          formData:
+            audio: "@./test-data/arabic-voice-sample.wav"
+            language: "ar-SA"
+          expect:
+            - statusCode: 200
+          capture:
+            - json: "$.transcription"
+              as: "transcription"
+      
+      # Submit transcribed query
+      - post:
+          url: "/api/v1/rag/query"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            query: "{{ transcription }}"
+            language: "ar"
+            source: "voice"
+          expect:
+            - statusCode: 200
+      
+      - think: 3
+
+  # Scenario 8: Concurrent template generation
+  - name: "Template Generation"
+    weight: 8
+    flow:
+      # Authenticate
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "test-user@example.com"
+            password: "testPassword123"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      # Generate employment contract
+      - post:
+          url: "/api/v1/templates/template-001/generate"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            formData:
+              employee_name: "أحمد محمد السالم"
+              position: "مطور برمجيات"
+              department: "it"
+              base_salary: 15000
+              start_date: "2024-02-01"
+            format: "pdf"
+            options:
+              arabicFont: "NotoSansArabic-Regular"
+          expect:
+            - statusCode: 200
+      
+      # Generate payroll slip
+      - post:
+          url: "/api/v1/templates/template-002/generate"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            formData:
+              employee_name: "فاطمة أحمد الزهراني"
+              month_year: "يناير ٢٠٢٤"
+              base_salary: 12000
+              net_salary: 11250
+            format: "html"
+          expect:
+            - statusCode: 200
+      
+      - think: 4
+
+# Performance thresholds and SLA requirements
+expect:
+  # Response time requirements
+  - name: "Arabic query response time"
+    max: 3000  # 3 seconds max for Arabic queries
+  
+  - name: "Dashboard load time"
+    max: 2000  # 2 seconds max for dashboard
+  
+  - name: "Document upload time"
+    max: 10000  # 10 seconds max for document upload
+  
+  - name: "Export generation time"
+    max: 15000  # 15 seconds max for exports
+  
+  # Success rate requirements
+  - name: "Overall success rate"
+    min: 95  # 95% minimum success rate
+  
+  - name: "Arabic content success rate"
+    min: 92  # 92% minimum for Arabic content processing
+
+# Custom plugins for advanced monitoring
+plugins:
+  # Memory usage monitoring
+  - name: "memory-usage"
+    config:
+      threshold: "500MB"
+  
+  # Database connection monitoring
+  - name: "db-connections"
+    config:
+      maxConnections: 100
+  
+  # Arabic text processing metrics
+  - name: "arabic-metrics"
+    config:
+      trackEncoding: true
+      trackRTL: true
+      trackFontLoading: true

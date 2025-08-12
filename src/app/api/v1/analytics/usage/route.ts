@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getUserContext, checkUsageLimits, logUserActivity, updateUsageStats, AuthError, hasRole } from '@/libs/auth/auth-middleware';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
+import { analytics } from '@/middleware/analytics';
+import type { 
+  UsageMetrics as AnalyticsUsageMetrics, 
+  AnalyticsResponse, 
+  DailyUsage, 
+  WeeklyUsage, 
+  MonthlyUsage,
+  UserActivity,
+  PeakUsage
+} from '@/types/analytics';
 
 // Analytics request schemas
 const usageAnalyticsSchema = z.object({
@@ -311,64 +321,71 @@ async function getUsageMetrics(
   startDate: string,
   endDate: string
 ): Promise<UsageMetrics> {
-  // Get query metrics
-  const { data: queryData, error: queryError } = await supabase
-    .from('rag_queries')
-    .select('id, tokens_used, response_time_ms, created_at')
+  // Get chat interaction metrics (replaces rag_queries)
+  const { data: chatData } = await supabase
+    .from('chat_interactions')
+    .select('id, tokens_input, tokens_output, response_time_ms, created_at, user_id, success')
     .eq('organization_id', organizationId)
     .gte('created_at', startDate)
     .lte('created_at', endDate);
 
-  // Get unique users
-  const { data: userData } = await supabase
-    .from('rag_queries')
-    .select('user_id')
-    .eq('organization_id', organizationId)
-    .gte('created_at', startDate)
-    .lte('created_at', endDate);
-
-  const uniqueUsers = new Set(userData?.map(u => u.user_id) || []).size;
-
-  // Get documents processed
+  // Get document processing metrics
   const { data: documentsData } = await supabase
-    .from('documents')
-    .select('id')
+    .from('document_processing')
+    .select('id, user_id, success')
     .eq('organization_id', organizationId)
     .gte('created_at', startDate)
     .lte('created_at', endDate);
 
-  // Get templates generated
+  // Get template generation metrics
   const { data: templatesData } = await supabase
-    .from('template_generations')
-    .select('id')
+    .from('template_generation')
+    .select('id, user_id, success')
     .eq('organization_id', organizationId)
     .gte('created_at', startDate)
     .lte('created_at', endDate);
 
-  // Get API call count from usage logs
+  // Get API usage metrics
   const { data: apiCallsData } = await supabase
-    .from('usage_logs')
-    .select('api_calls')
+    .from('api_usage')
+    .select('id, response_time_ms, status_code')
     .eq('organization_id', organizationId)
     .gte('created_at', startDate)
     .lte('created_at', endDate);
+
+  // Calculate unique users across all activities
+  const allUserIds = new Set([
+    ...(chatData?.map(c => c.user_id).filter(Boolean) || []),
+    ...(documentsData?.map(d => d.user_id).filter(Boolean) || []),
+    ...(templatesData?.map(t => t.user_id).filter(Boolean) || [])
+  ]);
 
   // Calculate metrics
-  const totalQueries = queryData?.length || 0;
-  const totalTokens = queryData?.reduce((sum, q) => sum + (q.tokens_used || 0), 0) || 0;
-  const totalResponseTime = queryData?.reduce((sum, q) => sum + (q.response_time_ms || 0), 0) || 0;
+  const totalQueries = chatData?.length || 0;
+  const totalTokens = chatData?.reduce((sum, c) => sum + (c.tokens_input || 0) + (c.tokens_output || 0), 0) || 0;
+  const totalResponseTime = chatData?.reduce((sum, c) => sum + (c.response_time_ms || 0), 0) || 0;
   const averageResponseTime = totalQueries > 0 ? totalResponseTime / totalQueries : 0;
-  const totalApiCalls = apiCallsData?.reduce((sum, log) => sum + (log.api_calls || 0), 0) || 0;
+  const totalApiCalls = apiCallsData?.length || 0;
+
+  // Calculate error rate
+  const totalOperations = totalQueries + (documentsData?.length || 0) + (templatesData?.length || 0);
+  const errorCount = [
+    ...(chatData?.filter(c => !c.success) || []),
+    ...(documentsData?.filter(d => !d.success) || []),
+    ...(templatesData?.filter(t => !t.success) || []),
+    ...(apiCallsData?.filter(a => a.status_code >= 400) || [])
+  ].length;
+  const errorRate = totalOperations > 0 ? (errorCount / totalOperations) * 100 : 0;
 
   return {
     totalQueries,
-    uniqueUsers,
+    uniqueUsers: allUserIds.size,
     documentsProcessed: documentsData?.length || 0,
     templatesGenerated: templatesData?.length || 0,
     averageResponseTime,
     totalApiCalls,
     tokensUsed: totalTokens,
-    errorRate: 0 // Would need error tracking implementation
+    errorRate
   };
 }
 
@@ -388,28 +405,28 @@ async function getTimeSeriesData(
 }> {
   const timeFormat = getTimeFormat(granularity);
   
-  // Get queries time series
+  // Get chat interactions time series (replaces rag_queries)
   const { data: queriesTS } = await supabase
-    .from('rag_queries')
-    .select(`created_at, tokens_used, response_time_ms`)
+    .from('chat_interactions')
+    .select(`created_at, tokens_input, tokens_output, response_time_ms, user_id`)
     .eq('organization_id', organizationId)
     .gte('created_at', startDate)
     .lte('created_at', endDate)
     .order('created_at');
 
-  // Get documents time series
+  // Get document processing time series
   const { data: documentsTS } = await supabase
-    .from('documents')
-    .select('created_at')
+    .from('document_processing')
+    .select('created_at, user_id')
     .eq('organization_id', organizationId)
     .gte('created_at', startDate)
     .lte('created_at', endDate)
     .order('created_at');
 
-  // Get templates time series
+  // Get template generation time series
   const { data: templatesTS } = await supabase
-    .from('template_generations')
-    .select('created_at')
+    .from('template_generation')
+    .select('created_at, user_id')
     .eq('organization_id', organizationId)
     .gte('created_at', startDate)
     .lte('created_at', endDate)
@@ -417,7 +434,11 @@ async function getTimeSeriesData(
 
   // Process time series data
   const queries = processTimeSeriesData(queriesTS || [], 'count', granularity);
-  const users = processTimeSeriesData(queriesTS || [], 'unique_users', granularity);
+  const users = processTimeSeriesData([
+    ...(queriesTS || []),
+    ...(documentsTS || []),
+    ...(templatesTS || [])
+  ], 'unique_users', granularity);
   const documents = processTimeSeriesData(documentsTS || [], 'count', granularity);
   const templates = processTimeSeriesData(templatesTS || [], 'count', granularity);
   const response_times = processTimeSeriesData(queriesTS || [], 'avg_response_time', granularity);
@@ -444,49 +465,51 @@ async function getBreakdownData(
     switch (breakdown) {
       case 'document_category':
         const { data: docCategories } = await supabase
-          .from('documents')
-          .select('category')
+          .from('document_processing')
+          .select('document_type')
           .eq('organization_id', organizationId)
           .gte('created_at', startDate)
           .lte('created_at', endDate);
 
         result.document_category = processBreakdownData(
-          docCategories || [], 
+          docCategories?.map(d => ({ category: d.document_type })) || [], 
           'category'
         );
         break;
 
       case 'language':
-        const { data: languages } = await supabase
-          .from('rag_queries')
-          .select('language')
+        // For now, we'll get language from metadata or assume Arabic/English
+        const { data: chatLanguages } = await supabase
+          .from('chat_interactions')
+          .select('metadata')
           .eq('organization_id', organizationId)
           .gte('created_at', startDate)
           .lte('created_at', endDate);
 
-        result.language = processBreakdownData(
-          languages || [], 
-          'language'
-        );
+        const languageData = chatLanguages?.map(c => ({
+          language: c.metadata?.language || 'ar' // Default to Arabic for Saudi HR
+        })) || [];
+
+        result.language = processBreakdownData(languageData, 'language');
         break;
 
       case 'template_category':
         const { data: templateCategories } = await supabase
-          .from('template_generations')
-          .select('hr_templates!inner(category)')
+          .from('template_generation')
+          .select('template_category')
           .eq('organization_id', organizationId)
           .gte('created_at', startDate)
           .lte('created_at', endDate);
 
         result.template_category = processBreakdownData(
-          templateCategories?.map(t => ({ category: t.hr_templates.category })) || [], 
+          templateCategories?.map(t => ({ category: t.template_category })) || [], 
           'category'
         );
         break;
 
       case 'day_of_week':
         const { data: dayOfWeekData } = await supabase
-          .from('rag_queries')
+          .from('chat_interactions')
           .select('created_at')
           .eq('organization_id', organizationId)
           .gte('created_at', startDate)
@@ -497,6 +520,25 @@ async function getBreakdownData(
         })) || [];
 
         result.day_of_week = processBreakdownData(dayOfWeekBreakdown, 'day');
+        break;
+
+      case 'user':
+        // Get user breakdown with profile information
+        const { data: userBreakdown } = await supabase
+          .from('chat_interactions')
+          .select(`
+            user_id,
+            user_profiles!inner(full_name, department)
+          `)
+          .eq('organization_id', organizationId)
+          .gte('created_at', startDate)
+          .lte('created_at', endDate);
+
+        const userData = userBreakdown?.map(u => ({
+          category: u.user_profiles?.full_name || 'Unknown User'
+        })) || [];
+
+        result.user = processBreakdownData(userData, 'category');
         break;
     }
   }

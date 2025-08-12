@@ -2,15 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getUserContext, checkUsageLimits, logUserActivity, updateUsageStats, AuthError, hasRole } from '@/libs/auth/auth-middleware';
 import { createSupabaseServerClient } from '@/libs/supabase/supabase-server-client';
+import { analytics } from '@/middleware/analytics';
+import type { 
+  ComplianceMetrics, 
+  AnalyticsResponse, 
+  CategoryScore,
+  ComplianceIssue as AnalyticsComplianceIssue,
+  ComplianceTrend,
+  AuditEntry
+} from '@/types/analytics';
 
 // Compliance analytics schemas
 const complianceAnalyticsSchema = z.object({
+  period: z.enum(['day', 'week', 'month', 'quarter', 'year']).default('month'),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
   categories: z.array(z.enum([
     'employment', 'wages', 'termination', 'leave', 'working_hours', 'safety', 'discrimination'
   ])).optional(),
-  severity: z.enum(['all', 'high', 'medium', 'low']).default('all'),
+  severity: z.enum(['all', 'critical', 'high', 'medium', 'low']).default('all'),
   includeResolved: z.boolean().default(false),
-  language: z.enum(['ar', 'en']).default('ar')
+  language: z.enum(['ar', 'en']).default('ar'),
+  timezone: z.string().default('Asia/Riyadh')
 });
 
 interface ComplianceIssue {
@@ -124,36 +137,76 @@ export async function GET(request: NextRequest) {
     // Parse query parameters
     const { searchParams } = new URL(request.url);
     const queryParams = {
+      period: searchParams.get('period'),
+      startDate: searchParams.get('startDate'),
+      endDate: searchParams.get('endDate'),
       categories: searchParams.getAll('categories'),
       severity: searchParams.get('severity'),
       includeResolved: searchParams.get('includeResolved') === 'true',
-      language: searchParams.get('language')
+      language: searchParams.get('language'),
+      timezone: searchParams.get('timezone')
     };
     
-    const { categories, severity, includeResolved, language } = complianceAnalyticsSchema.parse(queryParams);
+    const validatedParams = complianceAnalyticsSchema.parse(queryParams);
+
+    // Calculate date range
+    const dateRange = calculateDateRange(validatedParams.period, validatedParams.startDate, validatedParams.endDate);
 
     const supabase = await createSupabaseServerClient();
 
-    // Generate compliance report
-    const complianceReport = await generateComplianceReport(
+    // Generate comprehensive compliance metrics
+    const complianceMetrics = await getComplianceMetrics(
       supabase,
       userContext.organizationId,
-      categories,
-      severity,
-      includeResolved,
-      language
+      dateRange.start,
+      dateRange.end,
+      validatedParams.categories,
+      validatedParams.severity,
+      validatedParams.includeResolved,
+      validatedParams.language
     );
+
+    const response: AnalyticsResponse<ComplianceMetrics> = {
+      data: complianceMetrics,
+      meta: {
+        organizationId: userContext.organizationId,
+        dateRange: {
+          start: dateRange.start,
+          end: dateRange.end
+        },
+        timezone: validatedParams.timezone,
+        generatedAt: new Date().toISOString()
+      },
+      success: true
+    };
+
+    // Track analytics event
+    await analytics.trackAnalyticsEvent({
+      userId: userContext.userId,
+      organizationId: userContext.organizationId,
+      eventName: 'compliance_analytics_viewed',
+      eventCategory: 'analytics',
+      eventAction: 'view',
+      eventLabel: validatedParams.period,
+      properties: {
+        dateRange: { start: dateRange.start, end: dateRange.end },
+        period: validatedParams.period,
+        overallScore: complianceMetrics.overallScore,
+        riskLevel: complianceMetrics.riskLevel
+      }
+    });
 
     // Log activity
     await logUserActivity(
       userContext,
-      'compliance_report_generated',
-      'compliance',
+      'compliance_analytics_viewed',
+      'analytics',
       undefined,
       { 
-        overallScore: complianceReport.compliance_score.overall_score,
-        riskLevel: complianceReport.risk_level,
-        issuesCount: complianceReport.issues.length
+        period: validatedParams.period,
+        overallScore: complianceMetrics.overallScore,
+        riskLevel: complianceMetrics.riskLevel,
+        issuesCount: complianceMetrics.issuesFound.length
       },
       request
     );
@@ -161,7 +214,7 @@ export async function GET(request: NextRequest) {
     // Update usage stats
     await updateUsageStats(userContext.organizationId, { api_calls: 1 });
 
-    return createSuccessResponse(complianceReport);
+    return createSuccessResponse(response);
 
   } catch (error) {
     if (error instanceof AuthError) {
@@ -261,6 +314,286 @@ export async function POST(request: NextRequest) {
 }
 
 // Helper functions
+function calculateDateRange(
+  period: string,
+  startDate?: string,
+  endDate?: string
+): { start: string; end: string } {
+  const now = new Date();
+  let start: Date;
+  let end: Date = now;
+
+  if (startDate && endDate) {
+    start = new Date(startDate);
+    end = new Date(endDate);
+  } else {
+    switch (period) {
+      case 'day':
+        start = new Date(now);
+        start.setHours(0, 0, 0, 0);
+        end = new Date(now);
+        end.setHours(23, 59, 59, 999);
+        break;
+      case 'week':
+        start = new Date(now);
+        start.setDate(now.getDate() - 7);
+        break;
+      case 'month':
+        start = new Date(now);
+        start.setMonth(now.getMonth() - 1);
+        break;
+      case 'quarter':
+        start = new Date(now);
+        start.setMonth(now.getMonth() - 3);
+        break;
+      case 'year':
+        start = new Date(now);
+        start.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        start = new Date(now);
+        start.setMonth(now.getMonth() - 1);
+    }
+  }
+
+  return {
+    start: start.toISOString(),
+    end: end.toISOString()
+  };
+}
+
+async function getComplianceMetrics(
+  supabase: any,
+  organizationId: string,
+  startDate: string,
+  endDate: string,
+  categories?: string[],
+  severity: string = 'all',
+  includeResolved: boolean = false,
+  language: string = 'ar'
+): Promise<ComplianceMetrics> {
+  // Get compliance scores
+  let scoresQuery = supabase
+    .from('compliance_scores')
+    .select('*')
+    .eq('organization_id', organizationId)
+    .gte('created_at', startDate)
+    .lte('created_at', endDate);
+
+  if (categories && categories.length > 0) {
+    scoresQuery = scoresQuery.in('category', categories);
+  }
+
+  const { data: scoresData } = await scoresQuery;
+
+  // Get compliance issues
+  let issuesQuery = supabase
+    .from('compliance_issues')
+    .select(`
+      *,
+      compliance_scores!inner(organization_id, created_at)
+    `)
+    .eq('compliance_scores.organization_id', organizationId)
+    .gte('compliance_scores.created_at', startDate)
+    .lte('compliance_scores.created_at', endDate);
+
+  if (severity !== 'all') {
+    issuesQuery = issuesQuery.eq('severity', severity);
+  }
+
+  if (!includeResolved) {
+    issuesQuery = issuesQuery.eq('resolved', false);
+  }
+
+  if (categories && categories.length > 0) {
+    issuesQuery = issuesQuery.in('category', categories);
+  }
+
+  const { data: issuesData } = await issuesQuery;
+
+  // Get audit trail
+  const { data: auditData } = await supabase
+    .from('audit_trail')
+    .select('*')
+    .eq('organization_id', organizationId)
+    .eq('resource_type', 'compliance')
+    .gte('created_at', startDate)
+    .lte('created_at', endDate)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  // Calculate overall score
+  const overallScore = scoresData && scoresData.length > 0 
+    ? scoresData.reduce((sum, score) => sum + score.score, 0) / scoresData.length
+    : 100;
+
+  // Generate category scores
+  const categoryScores = generateCategoryScores(scoresData || [], issuesData || [], categories);
+
+  // Determine risk level
+  const riskLevel = determineRiskLevel(overallScore, issuesData || []);
+
+  // Generate compliance trends
+  const complianceTrend = await generateComplianceTrends(
+    supabase,
+    organizationId,
+    startDate,
+    endDate,
+    categories
+  );
+
+  // Convert issues to analytics format
+  const analyticsIssues: AnalyticsComplianceIssue[] = (issuesData || []).map(issue => ({
+    id: issue.id,
+    category: issue.category,
+    severity: issue.severity,
+    description: language === 'ar' ? issue.description_arabic : issue.description,
+    descriptionArabic: issue.description_arabic,
+    recommendation: language === 'ar' ? issue.recommendation_arabic : issue.recommendation,
+    recommendationArabic: issue.recommendation_arabic,
+    laborLawReference: issue.labor_law_reference,
+    affectedDocuments: issue.affected_sections || [],
+    createdAt: issue.created_at,
+    resolved: issue.resolved,
+    resolvedAt: issue.resolved_at
+  }));
+
+  // Convert audit data to analytics format
+  const auditTrail: AuditEntry[] = (auditData || []).map(audit => ({
+    id: audit.id,
+    action: audit.action,
+    userId: audit.user_id,
+    userName: 'Unknown User', // Would need to join with user data
+    details: audit.new_values || {},
+    timestamp: audit.created_at,
+    ipAddress: audit.ip_address || '',
+    userAgent: audit.user_agent || ''
+  }));
+
+  const complianceMetrics: ComplianceMetrics = {
+    overallScore: Math.round(overallScore),
+    categoryScores,
+    riskLevel,
+    issuesFound: analyticsIssues,
+    complianceTrend,
+    auditTrail,
+    lastScanDate: scoresData && scoresData.length > 0 
+      ? scoresData.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0].created_at
+      : new Date().toISOString(),
+    nextScheduledScan: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // Next week
+  };
+
+  return complianceMetrics;
+}
+
+function generateCategoryScores(
+  scoresData: any[],
+  issuesData: any[],
+  categories?: string[]
+): CategoryScore[] {
+  const allCategories = categories || ['employment', 'wages', 'termination', 'leave', 'working_hours', 'safety', 'discrimination'];
+  
+  return allCategories.map(category => {
+    const categoryScores = scoresData.filter(score => score.category === category);
+    const categoryIssues = issuesData.filter(issue => issue.category === category);
+    
+    const averageScore = categoryScores.length > 0 
+      ? categoryScores.reduce((sum, score) => sum + score.score, 0) / categoryScores.length
+      : 100;
+    
+    const issuesCount = categoryIssues.length;
+    let status: 'compliant' | 'warning' | 'non_compliant' = 'compliant';
+    
+    if (averageScore < 60 || categoryIssues.some(issue => issue.severity === 'critical')) {
+      status = 'non_compliant';
+    } else if (averageScore < 80 || issuesCount > 0) {
+      status = 'warning';
+    }
+
+    return {
+      category,
+      categoryArabic: getCategoryArabicName(category),
+      score: Math.round(averageScore),
+      maxScore: 100,
+      percentage: Math.round(averageScore),
+      status,
+      issuesCount
+    };
+  });
+}
+
+function getCategoryArabicName(category: string): string {
+  const categoryNames: { [key: string]: string } = {
+    'employment': 'التوظيف',
+    'wages': 'الأجور',
+    'termination': 'إنهاء الخدمة',
+    'leave': 'الإجازات',
+    'working_hours': 'ساعات العمل',
+    'safety': 'السلامة المهنية',
+    'discrimination': 'عدم التمييز'
+  };
+  return categoryNames[category] || category;
+}
+
+async function generateComplianceTrends(
+  supabase: any,
+  organizationId: string,
+  startDate: string,
+  endDate: string,
+  categories?: string[]
+): Promise<ComplianceTrend[]> {
+  // Generate daily compliance trends
+  const { data: dailyScores } = await supabase
+    .from('compliance_scores')
+    .select('score, issues_found, created_at')
+    .eq('organization_id', organizationId)
+    .gte('created_at', startDate)
+    .lte('created_at', endDate)
+    .order('created_at');
+
+  const { data: dailyIssues } = await supabase
+    .from('compliance_issues')
+    .select(`
+      created_at,
+      resolved,
+      resolved_at,
+      compliance_scores!inner(organization_id)
+    `)
+    .eq('compliance_scores.organization_id', organizationId)
+    .gte('created_at', startDate)
+    .lte('created_at', endDate);
+
+  const trendsMap = new Map<string, ComplianceTrend>();
+
+  // Process scores
+  dailyScores?.forEach(score => {
+    const date = new Date(score.created_at).toISOString().split('T')[0];
+    if (!trendsMap.has(date)) {
+      trendsMap.set(date, {
+        date,
+        score: 0,
+        issuesCount: 0,
+        resolvedIssues: 0
+      });
+    }
+    const trend = trendsMap.get(date)!;
+    trend.score = Math.max(trend.score, score.score);
+    trend.issuesCount += score.issues_found || 0;
+  });
+
+  // Process resolved issues
+  dailyIssues?.forEach(issue => {
+    if (issue.resolved && issue.resolved_at) {
+      const date = new Date(issue.resolved_at).toISOString().split('T')[0];
+      const trend = trendsMap.get(date);
+      if (trend) {
+        trend.resolvedIssues++;
+      }
+    }
+  });
+
+  return Array.from(trendsMap.values()).sort((a, b) => a.date.localeCompare(b.date));
+}
 async function generateComplianceReport(
   supabase: any,
   organizationId: string,

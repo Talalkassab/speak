@@ -102,7 +102,7 @@ program
 program
   .command('article')
   .description('Get a specific article by number')
-  .argument '<number>', 'Article number to retrieve'
+  .argument('<number>', 'Article number to retrieve')
   .option('-l, --language <lang>', 'Display language (ar/en)', 'en')
   .action(async (articleNumber, options) => {
     try {

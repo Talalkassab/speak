@@ -10,7 +10,12 @@ import {
   Loader2,
   Languages,
   FileText,
-  Scale
+  Scale,
+  Volume2,
+  MicOff,
+  Play,
+  Pause,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -26,6 +31,11 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/utils/cn';
 import { detectTextLanguage } from '@/types/documents';
 import type { ChatInputOptions } from '@/types/chat';
+import { VoiceSettings, VoiceError, SpeechToTextResult } from '@/types/voice';
+import { AudioVisualization } from '@/components/voice/AudioVisualization';
+import useVoiceRecording from '@/hooks/useVoiceRecording';
+import useTextToSpeech from '@/hooks/useTextToSpeech';
+import { voiceCommandService } from '@/libs/services/voice-command-service';
 
 interface ChatInputProps {
   onSendMessage: (content: string, options?: ChatInputOptions) => void;
@@ -44,6 +54,9 @@ interface InputSettings {
   maxSources: number;
   autoDetectLanguage: boolean;
   preferredLanguage: 'ar' | 'en';
+  enableVoiceInput: boolean;
+  enableVoiceCommands: boolean;
+  voiceVisualization: boolean;
 }
 
 const DEFAULT_SETTINGS: InputSettings = {
@@ -52,6 +65,21 @@ const DEFAULT_SETTINGS: InputSettings = {
   maxSources: 10,
   autoDetectLanguage: true,
   preferredLanguage: 'ar',
+  enableVoiceInput: true,
+  enableVoiceCommands: true,
+  voiceVisualization: true,
+};
+
+const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
+  language: 'ar',
+  dialect: 'ar-SA',
+  rate: 1.0,
+  pitch: 1.0,
+  volume: 0.8,
+  autoDetectLanguage: true,
+  noiseReduction: true,
+  echoCancellation: true,
+  autoGainControl: true,
 };
 
 export function ChatInput({
@@ -67,12 +95,149 @@ export function ChatInput({
   const [content, setContent] = useState('');
   const [detectedLanguage, setDetectedLanguage] = useState<'ar' | 'en'>(language);
   const [settings, setSettings] = useState<InputSettings>(DEFAULT_SETTINGS);
+  const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>({
+    ...DEFAULT_VOICE_SETTINGS,
+    language,
+  });
   const [isExpanded, setIsExpanded] = useState(false);
   const [charCount, setCharCount] = useState(0);
-  const [isRecording, setIsRecording] = useState(false);
+  const [showVoicePanel, setShowVoicePanel] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Voice recording hook
+  const {
+    isRecording,
+    isPaused: voiceIsPaused,
+    isProcessing: voiceIsProcessing,
+    duration: voiceDuration,
+    audioLevel,
+    error: voiceError,
+    transcript: realtimeTranscript,
+    confidence: voiceConfidence,
+    startRecording,
+    pauseRecording,
+    resumeRecording,
+    stopRecording,
+    cancelRecording,
+    isSupported: voiceSupported,
+  } = useVoiceRecording({
+    settings: voiceSettings,
+    onTranscript: handleVoiceTranscript,
+    onError: handleVoiceError,
+    maxDuration: 300,
+  });
+
+  // Text-to-speech hook
+  const {
+    isSpeaking,
+    speak,
+    stop: stopSpeaking,
+    isSupported: ttsSupported,
+  } = useTextToSpeech({
+    settings: voiceSettings,
+    onError: handleVoiceError,
+  });
+
+  // Voice handlers
+  function handleVoiceTranscript(result: SpeechToTextResult) {
+    setVoiceTranscript(result.transcript);
+    
+    if (result.isFinal && result.transcript.trim()) {
+      // Check for voice commands if enabled
+      if (settings.enableVoiceCommands) {
+        checkForVoiceCommands(result.transcript);
+      }
+      
+      // Add transcript to content
+      const newContent = content + (content ? ' ' : '') + result.transcript;
+      setContent(newContent);
+      handleContentChange(newContent);
+      setVoiceTranscript('');
+    }
+  }
+
+  function handleVoiceError(error: VoiceError) {
+    console.error('Voice error:', error);
+    
+    // Provide user feedback
+    if (ttsSupported) {
+      const errorMessage = voiceSettings.language === 'ar' && error.messageAr 
+        ? error.messageAr 
+        : error.message;
+      speak(errorMessage, { language: voiceSettings.language });
+    }
+  }
+
+  // Check for voice commands
+  const checkForVoiceCommands = useCallback(async (transcript: string) => {
+    try {
+      const commandResult = voiceCommandService.recognizeCommand(transcript, voiceSettings.language);
+      
+      if (commandResult.recognized && commandResult.command) {
+        // Handle recognized voice command
+        handleVoiceCommand(commandResult.command.command, commandResult.parameters);
+        
+        // Provide voice feedback
+        if (ttsSupported) {
+          const feedback = voiceSettings.language === 'ar' 
+            ? `تم تنفيذ الأمر: ${commandResult.command.descriptionAr}`
+            : `Command executed: ${commandResult.command.description}`;
+          speak(feedback, { language: voiceSettings.language });
+        }
+      }
+    } catch (error) {
+      console.error('Voice command processing failed:', error);
+    }
+  }, [voiceSettings.language, ttsSupported, speak]);
+
+  // Handle voice commands
+  const handleVoiceCommand = useCallback((command: string, parameters?: string[]) => {
+    switch (command) {
+      case 'search':
+        if (parameters && parameters.length > 0) {
+          const query = parameters.join(' ');
+          setContent(query);
+          handleContentChange(query);
+        }
+        break;
+      case 'stop_recording':
+        if (isRecording) {
+          stopRecording();
+        }
+        break;
+      case 'start_recording':
+        if (!isRecording && voiceSupported) {
+          startRecording();
+        }
+        break;
+      case 'pause':
+        if (isRecording && !voiceIsPaused) {
+          pauseRecording();
+        } else if (isSpeaking) {
+          stopSpeaking();
+        }
+        break;
+      case 'continue':
+        if (isRecording && voiceIsPaused) {
+          resumeRecording();
+        }
+        break;
+      case 'repeat':
+        if (content.trim() && ttsSupported) {
+          speak(content, { language: voiceSettings.language });
+        }
+        break;
+      default:
+        console.log('Unhandled voice command:', command, parameters);
+    }
+  }, [
+    isRecording, voiceIsPaused, isSpeaking, content, voiceSupported, ttsSupported,
+    startRecording, stopRecording, pauseRecording, resumeRecording, stopSpeaking,
+    speak, voiceSettings.language, handleContentChange
+  ]);
 
   // Auto-resize textarea
   const adjustTextareaHeight = useCallback(() => {
@@ -178,11 +343,34 @@ export function ChatInput({
     console.log('Stop streaming requested');
   }, []);
 
-  // Voice recording (placeholder for future implementation)
-  const handleVoiceToggle = useCallback(() => {
-    setIsRecording(!isRecording);
-    // Voice recording implementation would go here
-  }, [isRecording]);
+  // Voice recording toggle
+  const handleVoiceToggle = useCallback(async () => {
+    if (!settings.enableVoiceInput || !voiceSupported) return;
+    
+    if (isRecording) {
+      if (voiceIsPaused) {
+        await resumeRecording();
+      } else {
+        await pauseRecording();
+      }
+    } else {
+      setShowVoicePanel(true);
+      await startRecording();
+    }
+  }, [settings.enableVoiceInput, voiceSupported, isRecording, voiceIsPaused, startRecording, pauseRecording, resumeRecording]);
+
+  // Stop voice recording
+  const handleStopVoiceRecording = useCallback(async () => {
+    await stopRecording();
+    setShowVoicePanel(false);
+  }, [stopRecording]);
+
+  // Cancel voice recording
+  const handleCancelVoiceRecording = useCallback(() => {
+    cancelRecording();
+    setVoiceTranscript('');
+    setShowVoicePanel(false);
+  }, [cancelRecording]);
 
   // Get placeholder text based on language
   const getPlaceholder = useCallback(() => {
@@ -200,6 +388,11 @@ export function ChatInput({
   // Update settings
   const updateSettings = useCallback((newSettings: Partial<InputSettings>) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
+  }, []);
+
+  // Update voice settings
+  const updateVoiceSettings = useCallback((newSettings: Partial<VoiceSettings>) => {
+    setVoiceSettings(prev => ({ ...prev, ...newSettings }));
   }, []);
 
   useEffect(() => {
@@ -310,7 +503,7 @@ export function ChatInput({
             )}
           </div>
           
-          {/* Voice input button (placeholder) */}
+          {/* Voice input button */}
           <Button
             type="button"
             variant="ghost"
@@ -318,13 +511,29 @@ export function ChatInput({
             className={cn(
               "p-2 flex-shrink-0 transition-colors",
               isRecording 
-                ? "text-red-500 hover:text-red-600 bg-red-50" 
-                : "text-gray-500 hover:text-gray-700"
+                ? voiceIsPaused
+                  ? "text-orange-500 hover:text-orange-600 bg-orange-50"
+                  : "text-red-500 hover:text-red-600 bg-red-50" 
+                : settings.enableVoiceInput && voiceSupported
+                  ? "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                  : "text-gray-300 cursor-not-allowed"
             )}
             onClick={handleVoiceToggle}
-            disabled={disabled}
+            disabled={disabled || !settings.enableVoiceInput}
+            title={
+              !voiceSupported 
+                ? (isRTL ? 'الإدخال الصوتي غير مدعوم' : 'Voice input not supported')
+                : isRecording 
+                  ? voiceIsPaused 
+                    ? (isRTL ? 'متوقف - اضغط للاستكمال' : 'Paused - Click to resume')
+                    : (isRTL ? 'يسجل - اضغط للإيقاف المؤقت' : 'Recording - Click to pause')
+                  : (isRTL ? 'ابدأ التسجيل الصوتي' : 'Start voice recording')
+            }
           >
-            {isRecording ? <Square className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+            {isRecording ? 
+              voiceIsPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />
+              : voiceSupported ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />
+            }
           </Button>
 
           {/* Settings dropdown */}
@@ -424,6 +633,71 @@ export function ChatInput({
                   {settings.maxSources === num && <span className="ml-auto">✓</span>}
                 </DropdownMenuItem>
               ))}
+
+              <DropdownMenuSeparator />
+
+              {/* Voice Settings */}
+              <DropdownMenuLabel className="text-xs text-gray-500">
+                <span className={cn(isRTL ? 'font-arabic' : '')}>
+                  {isRTL ? 'إعدادات الصوت' : 'Voice Settings'}
+                </span>
+              </DropdownMenuLabel>
+              <DropdownMenuCheckboxItem
+                checked={settings.enableVoiceInput}
+                onCheckedChange={(checked) => updateSettings({ enableVoiceInput: checked })}
+                disabled={!voiceSupported}
+              >
+                <Mic className="w-4 h-4 mr-2" />
+                <span className={cn(isRTL ? 'font-arabic' : '')}>
+                  {isRTL ? 'تفعيل الإدخال الصوتي' : 'Enable voice input'}
+                </span>
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={settings.enableVoiceCommands}
+                onCheckedChange={(checked) => updateSettings({ enableVoiceCommands: checked })}
+                disabled={!voiceSupported}
+              >
+                <Volume2 className="w-4 h-4 mr-2" />
+                <span className={cn(isRTL ? 'font-arabic' : '')}>
+                  {isRTL ? 'تفعيل الأوامر الصوتية' : 'Enable voice commands'}
+                </span>
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={settings.voiceVisualization}
+                onCheckedChange={(checked) => updateSettings({ voiceVisualization: checked })}
+                disabled={!voiceSupported}
+              >
+                <span className={cn(isRTL ? 'font-arabic' : '')}>
+                  {isRTL ? 'إظهار المؤشر الصوتي' : 'Show voice visualization'}
+                </span>
+              </DropdownMenuCheckboxItem>
+
+              <DropdownMenuSeparator />
+
+              {/* Voice Quality Settings */}
+              <DropdownMenuLabel className="text-xs text-gray-500">
+                <span className={cn(isRTL ? 'font-arabic' : '')}>
+                  {isRTL ? 'جودة الصوت' : 'Audio Quality'}
+                </span>
+              </DropdownMenuLabel>
+              <DropdownMenuCheckboxItem
+                checked={voiceSettings.noiseReduction}
+                onCheckedChange={(checked) => updateVoiceSettings({ noiseReduction: checked })}
+                disabled={!voiceSupported}
+              >
+                <span className={cn(isRTL ? 'font-arabic' : '')}>
+                  {isRTL ? 'تقليل الضوضاء' : 'Noise reduction'}
+                </span>
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={voiceSettings.echoCancellation}
+                onCheckedChange={(checked) => updateVoiceSettings({ echoCancellation: checked })}
+                disabled={!voiceSupported}
+              >
+                <span className={cn(isRTL ? 'font-arabic' : '')}>
+                  {isRTL ? 'إلغاء الصدى' : 'Echo cancellation'}
+                </span>
+              </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
@@ -459,8 +733,125 @@ export function ChatInput({
           )}
         </div>
 
+        {/* Voice Recording Panel */}
+        {showVoicePanel && isRecording && (
+          <div className={cn(
+            "mt-3 p-4 bg-gray-50 rounded-lg border",
+            voiceError && "border-red-200 bg-red-50"
+          )}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div className={cn(
+                  "w-3 h-3 rounded-full animate-pulse",
+                  voiceIsPaused ? "bg-orange-500" : "bg-red-500"
+                )}>
+                </div>
+                <span className={cn(
+                  "text-sm font-medium",
+                  isRTL && "font-arabic"
+                )}>
+                  {voiceIsPaused
+                    ? (isRTL ? 'التسجيل متوقف' : 'Recording paused')
+                    : (isRTL ? 'جار التسجيل...' : 'Recording...')
+                  }
+                </span>
+                <span className="text-sm text-gray-500 font-mono">
+                  {Math.floor(voiceDuration / 60)}:{(voiceDuration % 60).toString().padStart(2, '0')}
+                </span>
+              </div>
+              
+              <Button
+                onClick={handleCancelVoiceRecording}
+                variant="ghost"
+                size="sm"
+                className="text-gray-500 hover:text-red-600"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+
+            {/* Audio Visualization */}
+            {settings.voiceVisualization && (
+              <div className="mb-3 flex justify-center">
+                <AudioVisualization
+                  audioLevel={audioLevel}
+                  isRecording={isRecording}
+                  isPaused={voiceIsPaused}
+                  variant="bars"
+                  size="md"
+                  showFrequency
+                />
+              </div>
+            )}
+
+            {/* Real-time Transcript */}
+            {(voiceTranscript || realtimeTranscript) && (
+              <div className={cn(
+                "mb-3 p-2 bg-white rounded border text-sm",
+                isRTL && "text-right font-arabic"
+              )}>
+                <p className="text-gray-700">
+                  {voiceTranscript || realtimeTranscript}
+                </p>
+                {voiceConfidence && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    {isRTL ? 'مستوى الثقة:' : 'Confidence:'} {Math.round(voiceConfidence * 100)}%
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Voice Error */}
+            {voiceError && (
+              <div className="mb-3 p-2 bg-red-100 border border-red-200 rounded text-sm">
+                <p className="text-red-700">
+                  {isRTL && voiceError.messageAr ? voiceError.messageAr : voiceError.message}
+                </p>
+              </div>
+            )}
+
+            {/* Voice Controls */}
+            <div className="flex items-center justify-center gap-2">
+              <Button
+                onClick={handleVoiceToggle}
+                variant={voiceIsPaused ? "default" : "secondary"}
+                size="sm"
+                disabled={voiceIsProcessing}
+              >
+                {voiceIsPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                <span className={cn("ml-1", isRTL && "font-arabic")}>
+                  {voiceIsPaused 
+                    ? (isRTL ? 'متابعة' : 'Resume')
+                    : (isRTL ? 'إيقاف' : 'Pause')
+                  }
+                </span>
+              </Button>
+              
+              <Button
+                onClick={handleStopVoiceRecording}
+                variant="default"
+                size="sm"
+                disabled={voiceIsProcessing}
+                className="bg-saudi-navy-600 hover:bg-saudi-navy-700"
+              >
+                {voiceIsProcessing ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Square className="w-4 h-4" />
+                )}
+                <span className={cn("ml-1", isRTL && "font-arabic")}>
+                  {voiceIsProcessing
+                    ? (isRTL ? 'معالجة...' : 'Processing...')
+                    : (isRTL ? 'إنهاء' : 'Stop')
+                  }
+                </span>
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Keyboard shortcuts hint */}
-        {content.length === 0 && (
+        {content.length === 0 && !showVoicePanel && (
           <div className="mt-2 text-xs text-gray-400 text-center">
             <span className={cn(isRTL ? 'font-arabic' : '')}>
               {isRTL 

@@ -1,0 +1,196 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    # Warm-up phase
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm-up"
+    # Ramp-up phase
+    - duration: 120
+      arrivalRate: 10
+      rampTo: 50
+      name: "Ramp-up load"
+    # Sustained load phase
+    - duration: 300
+      arrivalRate: 50
+      name: "Sustained load"
+    # Peak load phase
+    - duration: 120
+      arrivalRate: 50
+      rampTo: 100
+      name: "Peak load"
+    # Cool-down phase
+    - duration: 60
+      arrivalRate: 100
+      rampTo: 5
+      name: "Cool-down"
+  payload:
+    path: "./test-data.csv"
+    fields:
+      - "query"
+      - "language"
+  variables:
+    authToken: "test-bearer-token"
+  plugins:
+    metrics-by-endpoint:
+      useOnlyRequestNames: true
+  defaults:
+    headers:
+      Authorization: 'Bearer {{ authToken }}'
+      Content-Type: 'application/json'
+      Accept: 'application/json'
+      Accept-Language: 'ar-SA,ar;q=0.9,en;q=0.8'
+
+scenarios:
+  # Chat/RAG Query Performance Test
+  - name: "RAG Query Performance"
+    weight: 40
+    flow:
+      # Health check
+      - get:
+          url: "/api/health"
+          name: "Health Check"
+          expect:
+            - statusCode: 200
+      
+      # Create conversation
+      - post:
+          url: "/api/v1/chat/conversations"
+          name: "Create Conversation"
+          json:
+            title: "Performance Test Conversation"
+            initialMessage: "{{ query }}"
+          capture:
+            - json: "$.data.id"
+              as: "conversationId"
+          expect:
+            - statusCode: 201
+      
+      # Send RAG query
+      - post:
+          url: "/api/v1/chat/conversations/{{ conversationId }}/messages"
+          name: "Send RAG Query"
+          json:
+            content: "{{ query }}"
+            language: "{{ language }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "data.response"
+          think: 2
+
+  # Analytics Dashboard Performance Test
+  - name: "Analytics Dashboard"
+    weight: 20
+    flow:
+      # Get overview metrics
+      - get:
+          url: "/api/v1/analytics/metrics"
+          name: "Get Overview Metrics"
+          expect:
+            - statusCode: 200
+      
+      # Get usage analytics
+      - get:
+          url: "/api/v1/analytics/usage"
+          name: "Get Usage Analytics"
+          qs:
+            startDate: "2025-08-01"
+            endDate: "2025-08-11"
+          expect:
+            - statusCode: 200
+      
+      # Get performance metrics
+      - get:
+          url: "/api/v1/analytics/performance"
+          name: "Get Performance Metrics"
+          expect:
+            - statusCode: 200
+          think: 1
+
+  # Document Processing Performance Test
+  - name: "Document Processing"
+    weight: 15
+    flow:
+      # List documents
+      - get:
+          url: "/api/v1/documents"
+          name: "List Documents"
+          qs:
+            page: "1"
+            limit: "20"
+          expect:
+            - statusCode: 200
+      
+      # Search documents
+      - get:
+          url: "/api/v1/documents/search"
+          name: "Search Documents"
+          qs:
+            q: "نظام العمل"
+            language: "ar"
+          expect:
+            - statusCode: 200
+          think: 1
+
+  # Template Management Performance Test
+  - name: "Template Management"
+    weight: 15
+    flow:
+      # List templates
+      - get:
+          url: "/api/v1/templates"
+          name: "List Templates"
+          expect:
+            - statusCode: 200
+      
+      # Get template categories
+      - get:
+          url: "/api/v1/templates/categories"
+          name: "Get Template Categories"
+          expect:
+            - statusCode: 200
+          think: 1
+
+  # Voice Processing Performance Test
+  - name: "Voice Processing"
+    weight: 10
+    flow:
+      # Mock voice transcription
+      - post:
+          url: "/api/v1/voice/transcribe"
+          name: "Voice Transcription"
+          formData:
+            audio: "@./test-audio-sample.wav"
+            language: "ar-SA"
+          expect:
+            - statusCode: 200
+            - hasProperty: "transcript"
+          think: 3
+
+# Performance thresholds and SLA definitions
+expect:
+  # Overall response time thresholds
+  - http.response_time.p95: 2000  # 95% of requests under 2 seconds
+  - http.response_time.p99: 5000  # 99% of requests under 5 seconds
+  - http.response_time.mean: 800   # Average response time under 800ms
+  
+  # Success rate thresholds
+  - http.codes.200: 95  # At least 95% success rate
+  - http.codes.201: 99  # 99% success for creation endpoints
+  
+  # Specific endpoint thresholds
+  - plugins.metrics-by-endpoint.response_time.Send RAG Query.p95: 3000
+  - plugins.metrics-by-endpoint.response_time.Get Overview Metrics.p95: 1000
+  - plugins.metrics-by-endpoint.response_time.Voice Transcription.p95: 8000
+
+# Error handling configuration
+http:
+  timeout: 30
+  extendedMetrics: true
+  
+# Reporting configuration
+reporting:
+  - type: json
+    output: "./test-results/artillery-results.json"
+  - type: html
+    output: "./test-results/artillery-report.html"

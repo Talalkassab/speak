@@ -99,6 +99,25 @@ const config: Config = {
           pending: '#6b7280',
         },
         
+        // Cost dashboard specific colors
+        cost: {
+          savings: '#10b981',
+          increase: '#ef4444',
+          stable: '#6b7280',
+          warning: '#f59e0b',
+          critical: '#dc2626',
+          efficient: '#059669',
+          inefficient: '#dc2626',
+        },
+        
+        // Budget status colors
+        budget: {
+          under: '#10b981',
+          ontrack: '#3b82f6',
+          atrisk: '#f59e0b',
+          over: '#ef4444',
+        },
+        
         // Chat interface colors
         chat: {
           user: '#1a365d',

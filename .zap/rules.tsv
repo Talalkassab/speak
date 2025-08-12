@@ -1,0 +1,36 @@
+# ZAP Security Scan Rules for HR Intelligence Platform
+# This file configures OWASP ZAP security scanning rules
+
+# Ignore false positives for Next.js specific patterns
+10202	IGNORE	(X-Frame-Options Header Not Set)	http://localhost:3000/_next/.*
+10020	IGNORE	(X-Content-Type-Options Header Missing)	http://localhost:3000/_next/.*
+10021	IGNORE	(X-Content-Type-Options Header Missing)	http://localhost:3000/api/.*
+
+# Authentication endpoints - require extra scrutiny  
+40012	FAIL	(Cross Site Request Forgery)	http://localhost:3000/api/auth/.*
+40014	FAIL	(Cross Site Request Forgery)	http://localhost:3000/api/v1/.*
+
+# Arabic content specific tests
+10055	WARN	(CSP Scanner)	http://localhost:3000/.*
+10056	WARN	(CSP Scanner)	http://localhost:3000/.*
+
+# API security rules
+90020	FAIL	(Insecure HTTP Method)	http://localhost:3000/api/.*
+90021	FAIL	(Information Disclosure)	http://localhost:3000/api/.*
+
+# XSS protection for Arabic content
+40016	FAIL	(Web Browser XSS Protection Not Enabled)	http://localhost:3000/.*
+40017	FAIL	(Cross Site Scripting)	http://localhost:3000/.*
+
+# SQL Injection tests for search and query endpoints
+40018	FAIL	(SQL Injection)	http://localhost:3000/api/v1/rag/.*
+40019	FAIL	(SQL Injection)	http://localhost:3000/api/v1/search/.*
+
+# File upload security for document processing
+30001	FAIL	(Buffer Overflow)	http://localhost:3000/api/v1/documents/.*
+30002	FAIL	(Format String Error)	http://localhost:3000/api/v1/documents/.*
+
+# Session management
+10001	FAIL	(Secure Flag Not Set)	http://localhost:3000/.*
+10010	FAIL	(Cookie Not Secured)	http://localhost:3000/.*
+10011	FAIL	(Cookie Not HttpOnly)	http://localhost:3000/.*
